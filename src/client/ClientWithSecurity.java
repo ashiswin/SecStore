@@ -80,7 +80,7 @@ public class ClientWithSecurity {
 
 			System.out.println("Received server certificate!");
 			System.out.println("Verifying server certificate with " + CA_CERT_PATH + "...");
-			X509Certificate CAcert = (X509Certificate) cf.generateCertificate(new FileInputStream(CA_CERT_PATH));
+			X509Certificate CAcert = (X509Certificate) cf.generateCertificate(ClientWithSecurity.class.getResourceAsStream(CA_CERT_PATH));
 			PublicKey key = CAcert.getPublicKey();
 			
 			serverCert.checkValidity();

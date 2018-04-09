@@ -170,7 +170,7 @@ public class ServerWithSecurity {
 				else if(established && packetType == 4) { // If packet is for requesting server certificate
 					System.out.println("Sending server certificate...");
 					
-					File cert = new File(SERVER_CERT_FILE);
+					File cert = new File(ServerWithSecurity.class.getResource(SERVER_CERT_FILE).getFile());
 					FileInputStream fileInputStream = new FileInputStream(cert);
 					BufferedInputStream bis = new BufferedInputStream(fileInputStream);
 					byte [] fromFileBuffer = new byte[(int) cert.length()];

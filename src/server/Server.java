@@ -17,6 +17,7 @@ public class Server {
 	public static final String UPLOAD_DIR = "upload/";
 	public static final boolean LOCAL_SERVER = true;
 	public static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
+	
 	// RSA constants
 	public static final long MAX_KEY_LENGTH = 8192L;
 	public static final String SHA1_WITH_RSA = "SHA1withRSA";
@@ -30,8 +31,12 @@ public class Server {
 	public static KeyFactory keyFactory;
 	public static PrivateKey privateKey;
 	
-	public static void init(String filename) {
+	/*
+	 * init(): Ensures the server environment is correct and loads in necessary data
+	 */
+	public static void init() {
 		try {
+			// Check for upload directory
 			System.out.println("Checking for upload directory");
 			File uploadDir = new File(UPLOAD_DIR);
 			if(!uploadDir.exists()) {
@@ -42,8 +47,10 @@ public class Server {
 			else {
 				System.out.println("Upload directory exists");
 			}
-			System.out.println("Loading key pair from " + filename);
-			keyFile = new File(Server.class.getResource(filename).getFile());
+			
+			// Load private/public key pair
+			System.out.println("Loading key pair from " + PRIVATE_KEY_FILE);
+			keyFile = new File(Server.class.getResource(PRIVATE_KEY_FILE).getFile());
 			dsa = Signature.getInstance(SHA1_WITH_RSA, SUN_JSSE);
 			keyFactory = KeyFactory.getInstance(RSA, SUN_JSSE);
 
@@ -75,7 +82,7 @@ public class Server {
 			privateKey = keyFactory.generatePrivate(privKeySpec);
 			dsa.initSign(privateKey);
 			
-			System.out.println("Initialization complete");
+			System.out.println("Initialization complete\n\n");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -83,7 +90,7 @@ public class Server {
 	
 	
 	public static void main(String[] args) {
-		init(PRIVATE_KEY_FILE);
+		init();
 		
 		ServerSocket welcomeSocket = null;
 		Socket connectionSocket = null;
@@ -94,13 +101,16 @@ public class Server {
 		try {
 			System.out.println("Server starting on port " + PORT);
 			welcomeSocket = new ServerSocket(PORT);
-			System.out.println("Server started! Listening...");
+			System.out.println("Server started! Listening...\n\n");
 			
 			while(true) {
+				// Accept a client and fire off a new thread to handler them
 				connectionSocket = welcomeSocket.accept();
 				new ServerThread(connectionSocket).start();
 			}
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 

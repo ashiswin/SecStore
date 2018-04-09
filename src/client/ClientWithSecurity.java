@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -17,6 +18,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.GregorianCalendar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +35,32 @@ public class ClientWithSecurity {
 	private static final String RSA = "RSA";
 	private static final String SERVER_LIST = "http://devostrum.no-ip.info/secstore/Servers.php";
 	
+	public static long ping(String ipAddress) {
+		try {
+			InetAddress inet = InetAddress.getByName(ipAddress);
+		 
+			System.out.println("Sending Ping Request to " + ipAddress);
+	 
+			long finish = 0;
+			long start = new GregorianCalendar().getTimeInMillis();
+	 
+			if (inet.isReachable(5000)){
+				finish = new GregorianCalendar().getTimeInMillis();
+				System.out.println("Ping RTT: " + (finish - start + "ms"));
+				
+				return finish;
+			} else {
+				System.out.println(ipAddress + " NOT reachable.");
+			}
+	    } catch ( Exception e ) {
+	    	System.out.println("Exception:" + e.getMessage());
+	    }
+		
+		return -1;
+	}
+	/*
+	 * Download list of servers from main server. Attempt to connect to one with best ping.
+	 */
 	public static Socket findServer() throws UnknownHostException, IOException, JSONException {
 		URL obj = new URL(SERVER_LIST);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -54,7 +82,19 @@ public class ClientWithSecurity {
 				System.err.println("No servers available");
 				return null;
 			}
-			JSONObject server = servers.getJSONObject(0);
+			long min = 10000000;
+			int minServer = 0;
+			
+			for(int i = 0; i < servers.length(); i++) {
+				JSONObject server = servers.getJSONObject(i);
+				long rtt = ping(server.getString("ip"));
+				if(rtt > 0 && rtt < min ) {
+					min = rtt;
+					minServer = i;
+				}
+			}
+			
+			JSONObject server = servers.getJSONObject(minServer);
 			return new Socket(server.getString("ip"), server.getInt("port"));
 		} else {
 			System.out.println("Unable to get server list");

@@ -88,7 +88,6 @@ public class Server {
 		}
 	}
 	
-	
 	public static void main(String[] args) {
 		init();
 		
@@ -111,7 +110,6 @@ public class Server {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 }

@@ -1,16 +1,26 @@
 package client;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import common.Packet;
 
@@ -21,6 +31,37 @@ public class ClientWithSecurity {
 	private static final String SHA1_WITH_RSA = "SHA1withRSA";
 	private static final String SUN_JSSE = "SunJSSE";
 	private static final String RSA = "RSA";
+	private static final String SERVER_LIST = "http://devostrum.no-ip.info/secstore/Servers.php";
+	
+	public static Socket findServer() throws UnknownHostException, IOException, JSONException {
+		URL obj = new URL(SERVER_LIST);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		
+		int responseCode = con.getResponseCode();
+		System.out.println("GET Response Code :: " + responseCode);
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			JSONArray servers = new JSONArray(response.toString());
+			if(servers.length() == 0) {
+				System.err.println("No servers available");
+				return null;
+			}
+			JSONObject server = servers.getJSONObject(0);
+			return new Socket(server.getString("ip"), server.getInt("port"));
+		} else {
+			System.out.println("Unable to get server list");
+		}
+
+		return null;
+	}
 	
 	public static void main(String[] args) {
 	    String filename = "/home/ashiswin/rr.txt";
@@ -37,7 +78,10 @@ public class ClientWithSecurity {
 			System.out.println("Establishing connection to server...");
 
 			// Connect to server and get the input and output streams
-			clientSocket = new Socket("localhost", 4321);
+			clientSocket = findServer();
+			if(clientSocket == null) {
+				System.exit(-1);
+			}
 			toServer = new DataOutputStream(clientSocket.getOutputStream());
 			fromServer = new DataInputStream(clientSocket.getInputStream());
 			System.out.println("Sending HELO...");

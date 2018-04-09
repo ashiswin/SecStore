@@ -140,6 +140,7 @@ public class ClientWithSecurity {
 			int numBytes = 0;
 			
 			// Send the file
+			// TODO: Encrypt blocks with RSA
 			int count = 0;
 			for (boolean fileEnded = false; !fileEnded;) {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
@@ -157,5 +158,9 @@ public class ClientWithSecurity {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void sendWithCP2(String filename, DataOutputStream toServer, DataInputStream fromServer) {
+		// TODO: Implement CP2 (exchange AES key and encrypt with AES)
 	}
 }

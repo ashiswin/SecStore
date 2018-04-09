@@ -22,6 +22,7 @@ public class ServerWithSecurity {
 	private static final String PRIVATE_KEY_FILE = "privateServer.der";
 	private static final String SERVER_CERT_FILE = "server.crt";
 	private static final String UPLOAD_DIR = "upload/";
+	private static final boolean LOCAL_SERVER = true;
 	
 	// RSA constants
 	private static final long MAX_KEY_LENGTH = 8192L;
@@ -103,6 +104,9 @@ public class ServerWithSecurity {
 
 		FileOutputStream fileOutputStream = null;
 		BufferedOutputStream bufferedFileOutputStream = null;
+		
+		HeartbeatThread heartbeat = new HeartbeatThread((LOCAL_SERVER) ? Util.getLocalIP() : Util.getPublicIP(), PORT);
+		heartbeat.start();
 		
 		try {
 			System.out.println("Server starting on port " + PORT);

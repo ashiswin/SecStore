@@ -24,8 +24,6 @@ public class ClientWithSecurity {
 	
 	public static void main(String[] args) {
 	    String filename = "/home/ashiswin/rr.txt";
-		
-		int numBytes = 0;
 
 		Socket clientSocket = null;
 

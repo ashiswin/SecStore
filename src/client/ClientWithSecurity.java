@@ -23,7 +23,7 @@ public class ClientWithSecurity {
 	private static final String RSA = "RSA";
 	
 	public static void main(String[] args) {
-	    String filename = "rr.txt";
+	    String filename = "/home/ashiswin/rr.txt";
 		
 		int numBytes = 0;
 
@@ -119,8 +119,8 @@ public class ClientWithSecurity {
 		try {
 			// Send the filename
 			toServer.writeInt(Packet.FILENAME.getValue());
-			toServer.writeInt(filename.getBytes().length);
-			toServer.write(filename.getBytes());
+			toServer.writeInt(filename.substring(filename.lastIndexOf("/") + 1).getBytes().length);
+			toServer.write(filename.substring(filename.lastIndexOf("/") + 1).getBytes());
 			toServer.flush();
 
 			// Open the file

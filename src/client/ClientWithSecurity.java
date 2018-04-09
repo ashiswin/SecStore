@@ -12,6 +12,8 @@ import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import common.Packet;
+
 public class ClientWithSecurity {
 	private static final String CA_CERT_PATH = "CA.crt";
 	private static final String HELO = "HELO";
@@ -21,7 +23,7 @@ public class ClientWithSecurity {
 	private static final String RSA = "RSA";
 	
 	public static void main(String[] args) {
-	    	String filename = "rr.txt";
+	    String filename = "rr.txt";
 		
 		int numBytes = 0;
 
@@ -41,7 +43,7 @@ public class ClientWithSecurity {
 			toServer = new DataOutputStream(clientSocket.getOutputStream());
 			fromServer = new DataInputStream(clientSocket.getInputStream());
 			System.out.println("Sending HELO...");
-			toServer.writeInt(3);
+			toServer.writeInt(Packet.HELO.getValue());
 			toServer.writeInt(HELO.getBytes().length);
 			toServer.write(HELO.getBytes());
 			toServer.flush();
@@ -53,7 +55,7 @@ public class ClientWithSecurity {
 			System.out.println("Received welcome!");
 			System.out.println("Requesting server certificate...");
 			
-			toServer.writeInt(4);
+			toServer.writeInt(Packet.CERT.getValue());
 			toServer.flush();
 			
 			int certLength = fromServer.readInt();
@@ -103,7 +105,7 @@ public class ClientWithSecurity {
 			sendWithCP1(filename, toServer, fromServer);
 			
 			System.out.println("Closing connection...");
-			toServer.writeInt(2);
+			toServer.writeInt(Packet.EOS.getValue());
 			toServer.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,7 +118,7 @@ public class ClientWithSecurity {
 	public static void sendWithCP1(String filename, DataOutputStream toServer, DataInputStream fromServer) {
 		try {
 			// Send the filename
-			toServer.writeInt(5);
+			toServer.writeInt(Packet.FILENAME.getValue());
 			toServer.writeInt(filename.getBytes().length);
 			toServer.write(filename.getBytes());
 			toServer.flush();
@@ -131,7 +133,8 @@ public class ClientWithSecurity {
 				System.err.println("Empty file");
 				System.exit(-1);
 			}
-		    	FileInputStream fileInputStream = new FileInputStream(file);
+		    
+			FileInputStream fileInputStream = new FileInputStream(file);
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			byte [] fromFileBuffer = new byte[117];
 			int numBytes = 0;
@@ -142,7 +145,7 @@ public class ClientWithSecurity {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
 				fileEnded = numBytes < fromFileBuffer.length;
 
-				toServer.writeInt(1);
+				toServer.writeInt(Packet.FILE.getValue());
 				toServer.writeInt(numBytes);
 				toServer.write(fromFileBuffer, 0, numBytes);
 				toServer.flush();

@@ -14,6 +14,8 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 
+import common.Packet;
+
 public class ServerWithSecurity {
 	// Server configuration
 	private static final int PORT = 4321;
@@ -118,7 +120,7 @@ public class ServerWithSecurity {
 			while(!connectionSocket.isClosed()) {
 				int packetType = fromClient.readInt();
 				
-				if (established && packetType == 5) { // If the packet is for transferring the filename
+				if (established && packetType == Packet.FILENAME.getValue()) { // If the packet is for transferring the filename
 					System.out.println("Receiving file...");
 
 					int numBytes = fromClient.readInt();
@@ -130,7 +132,7 @@ public class ServerWithSecurity {
 					fileOutputStream = new FileOutputStream(UPLOAD_DIR + filenameString);
 					bufferedFileOutputStream = new BufferedOutputStream(fileOutputStream);
 				}
-				else if (established && packetType == 1) { // If the packet is for transferring a chunk of the file
+				else if (established && packetType == Packet.FILE.getValue()) { // If the packet is for transferring a chunk of the file
 					int numBytes = fromClient.readInt();
 					if (numBytes > 0) {
 						byte[] block = new byte[numBytes];
@@ -138,7 +140,7 @@ public class ServerWithSecurity {
 						bufferedFileOutputStream.write(block, 0, numBytes);
 						count++;
 					}
-				} else if (established && packetType == 2) { // If packet is for session termination
+				} else if (established && packetType == Packet.EOS.getValue()) { // If packet is for session termination
 					System.out.println("Received " + count + " blocks");
 					System.out.println("Closing connection...");
 
@@ -148,7 +150,7 @@ public class ServerWithSecurity {
 					toClient.close();
 					connectionSocket.close();
 				}
-				else if(packetType == 3) { // If packet is for initiation of communication
+				else if(packetType == Packet.HELO.getValue()) { // If packet is for initiation of communication
 					System.out.println("Receiving hello");
 					int numBytes = fromClient.readInt();
 					byte[] helo = new byte[numBytes];
@@ -167,7 +169,7 @@ public class ServerWithSecurity {
 						System.out.println("Sent welcome message");
 					}
 				}
-				else if(established && packetType == 4) { // If packet is for requesting server certificate
+				else if(established && packetType == Packet.CERT.getValue()) { // If packet is for requesting server certificate
 					System.out.println("Sending server certificate...");
 					
 					File cert = new File(ServerWithSecurity.class.getResource(SERVER_CERT_FILE).getFile());

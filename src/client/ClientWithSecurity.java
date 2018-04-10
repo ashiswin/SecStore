@@ -93,8 +93,8 @@ public class ClientWithSecurity {
 			
 			for(int i = 0; i < servers.length(); i++) {
 				JSONObject server = servers.getJSONObject(i);
-				long rtt = ping(server.getString("ip"));
-				if(rtt > 0 && rtt < min ) {
+				long rtt = ping(server.getString("ip").substring(0, server.getString("ip").indexOf(":")));
+				if(rtt >= 0 && rtt < min) {
 					min = rtt;
 					minServer = i;
 				}

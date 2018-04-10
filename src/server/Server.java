@@ -1,7 +1,10 @@
 package server;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyFactory;
@@ -11,11 +14,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 
 public class Server {
 	// Server configuration
-	public static final int PORT = 4321;
+	public static int PORT = 4321;
 	public static final String PRIVATE_KEY_FILE = "privateServer.der";
 	public static final String SERVER_CERT_FILE = "server.crt";
 	public static final String UPLOAD_DIR = "upload/";
-	public static final boolean LOCAL_SERVER = true;
+	public static boolean LOCAL_SERVER = true;
 	public static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
 	
 	// RSA constants
@@ -31,6 +34,26 @@ public class Server {
 	public static KeyFactory keyFactory;
 	public static PrivateKey privateKey;
 	
+	public static void readConf() throws NumberFormatException, IOException {
+		File conf = new File("server.conf");
+		if(!conf.exists()) return;
+		
+		BufferedReader reader = new BufferedReader(new FileReader(conf));
+		
+		String line;
+		while((line = reader.readLine()) != null){
+			String[] arr = line.split(" ");
+			if(arr[0].equals("port")) {
+				PORT = Integer.parseInt(arr[1]);
+			}
+			else if(arr[0].equals("local")) {
+				LOCAL_SERVER = Boolean.parseBoolean(arr[1]);
+			}
+		}
+		
+		System.out.println("Loaded config from server.conf");
+		reader.close();
+	}
 	/*
 	 * init(): Ensures the server environment is correct and loads in necessary data
 	 */
@@ -89,6 +112,11 @@ public class Server {
 	}
 	
 	public static void main(String[] args) {
+		try {
+			readConf();
+		} catch (NumberFormatException | IOException e1) {
+			e1.printStackTrace();
+		}
 		init();
 		
 		ServerSocket welcomeSocket = null;

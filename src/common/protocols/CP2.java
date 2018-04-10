@@ -4,19 +4,18 @@ package common.protocols;
  * Created by Oon Tong on 4/10/2018.
  */
 
-        import java.security.InvalidKeyException;
-        import java.security.Key;
-        import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 
-        import javax.crypto.BadPaddingException;
-        import javax.crypto.Cipher;
-        import javax.crypto.IllegalBlockSizeException;
-        import javax.crypto.NoSuchPaddingException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
-        import common.Protocol;
+import common.Protocol;
 
 public class CP2 extends BaseProtocol {
-
     Key key; //AES key
     public CP2(Key key) {
         super(Protocol.CP1);

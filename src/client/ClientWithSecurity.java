@@ -112,11 +112,11 @@ public class ClientWithSecurity {
 	}
 
 	public static void main(String[] args) {
-		String filename = "./rr.txt";
+		String filename = "/home/ashiswin/rr.txt";
 
 		long timeStarted = System.nanoTime();
 
-		runCP1(filename);
+		runCP2(filename);
 
 		long timeTaken = System.nanoTime() - timeStarted;
 		System.out.println("Program took: " + timeTaken/1000000.0 + "ms to run");
@@ -248,7 +248,6 @@ public class ClientWithSecurity {
 	}
 	
 	public static void sendWithCP2(String filename, DataOutputStream toServer, DataInputStream fromServer, SecretKey aes) {
-		// TODO: Implement CP2 (exchange AES key and encrypt with AES)
 		try {
 			// Send the filename
 			toServer.writeInt(Packet.FILENAME.getValue());
@@ -270,7 +269,7 @@ public class ClientWithSecurity {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			CP2 protocol = new CP2(aes);
-			byte [] fromFileBuffer = new byte[117];
+			byte[] fromFileBuffer = new byte[(int) file.length() / 2];
 			int numBytes = 0;
 
 			// Send the file
@@ -369,8 +368,6 @@ public class ClientWithSecurity {
 			toServer.writeInt(aesEncrypted.length);
 			//Send encrypted aes key
 			toServer.write(aesEncrypted);
-
-
 
 			System.out.println("Established protocol CP2");
 

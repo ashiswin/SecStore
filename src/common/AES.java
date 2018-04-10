@@ -24,7 +24,7 @@ public class AES {
         return null;
     }
 
-    public static byte[] encryptAESKey(SecretKey aes,Key publicKey){
+    public static byte[] encryptAESKey(SecretKey aes, Key publicKey){
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 import common.AES;
 import common.Protocol;
@@ -122,6 +123,7 @@ public class Handler {
 			byte[] block = new byte[numBytes];
 			fromClient.read(block);
 			
+			System.out.println(Base64.getEncoder().encodeToString(block));
 			byte[] decryptedBytes = protocol.decrypt(block);
 			bufferedFileOutputStream.write(decryptedBytes, 0, decryptedNumBytes);
 			

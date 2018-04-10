@@ -18,6 +18,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.GregorianCalendar;
 
 import javax.crypto.SecretKey;
@@ -269,7 +270,8 @@ public class ClientWithSecurity {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			CP2 protocol = new CP2(aes);
-			byte[] fromFileBuffer = new byte[177];
+			
+			byte[] fromFileBuffer = new byte[2048];
 			int numBytes = 0;
 
 			// Send the file
@@ -277,8 +279,10 @@ public class ClientWithSecurity {
 			for (boolean fileEnded = false; !fileEnded;) {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
 				fileEnded = numBytes < fromFileBuffer.length;
+				if(numBytes < 0) break;
 				
 				byte[] encryptedBytes = protocol.encrypt(fromFileBuffer);
+				//System.out.println(count + ": " + Base64.getEncoder().encodeToString(encryptedBytes) + "\n");
 				toServer.writeInt(Packet.FILE.getValue());
 				toServer.writeInt(numBytes);
 				toServer.writeInt(encryptedBytes.length);

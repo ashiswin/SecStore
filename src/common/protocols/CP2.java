@@ -25,7 +25,7 @@ public class CP2 extends BaseProtocol {
     @Override
     public byte[] encrypt(byte[] plaintext) {
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return cipher.doFinal(plaintext);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
@@ -38,7 +38,7 @@ public class CP2 extends BaseProtocol {
     @Override
     public byte[] decrypt(byte[] ciphertext) {
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, key);
             return cipher.doFinal(ciphertext);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {

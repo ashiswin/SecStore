@@ -20,7 +20,7 @@ public class HeartbeatThread extends Thread {
 		
 		while(running) {
 			try {
-				System.out.println("Sending heartbeat...");
+				//System.out.println("Sending heartbeat...");
 				s.heartbeat(ip, port);
 				Thread.sleep(10000);
 			} catch (SQLException e) {

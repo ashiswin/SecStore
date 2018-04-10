@@ -10,7 +10,6 @@ public class ServerConnector {
 	
 	private static final String TABLE_NAME = "servers";
 	private static final String COLUMN_IP = "ip";
-	private static final String COLUMN_PORT = "port";
 	private static final String COLUMN_SCRATCH = "scratch";
 	@SuppressWarnings("unused")
 	private static final String COLUMN_HEARTBEAT = "heartbeat";
@@ -25,7 +24,7 @@ public class ServerConnector {
             // Setup the connection with the DB
             connect = DriverManager.getConnection("jdbc:mysql://devostrum.no-ip.info/secstore?user=secstore&password=secstore");
             
-            heartbeatStatement = connect.prepareStatement("INSERT INTO " + TABLE_NAME + "(`" + COLUMN_IP + "`, `" + COLUMN_PORT + "`) VALUES(?, ?)"
+            heartbeatStatement = connect.prepareStatement("INSERT INTO " + TABLE_NAME + "(`" + COLUMN_IP + "`) VALUES(?)"
             		+ "ON DUPLICATE KEY UPDATE `" + COLUMN_SCRATCH + "` = `" + COLUMN_SCRATCH + "` + 1");
 		} catch (Exception e) {
             e.printStackTrace();
@@ -41,8 +40,7 @@ public class ServerConnector {
 	}
 	
 	public void heartbeat(String ip, int port) throws SQLException {
-		heartbeatStatement.setString(1, ip);
-		heartbeatStatement.setInt(2, port);
+		heartbeatStatement.setString(1, ip + ":" + port);
 		
 		heartbeatStatement.executeUpdate();
 	}

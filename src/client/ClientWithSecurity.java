@@ -20,17 +20,17 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.GregorianCalendar;
 
-import common.protocols.CP2;
+import javax.crypto.SecretKey;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import common.AES;
 import common.Packet;
 import common.Protocol;
 import common.protocols.CP1;
-import common.AES;
-
-import javax.crypto.SecretKey;
+import common.protocols.CP2;
 
 public class ClientWithSecurity {
 	private static final String CA_CERT_PATH = "CA.crt";
@@ -101,9 +101,9 @@ public class ClientWithSecurity {
 			}
 			
 			JSONObject server = servers.getJSONObject(minServer);
-			System.out.println("Using server " + server.getString("ip") + ":" + server.getInt("port") + "\n\n");
-			
-			return new Socket(server.getString("ip"), server.getInt("port"));
+			System.out.println("Using server " + server.getString("ip") + "\n\n");
+			int colon = server.getString("ip").indexOf(":");
+			return new Socket(server.getString("ip").substring(0, colon), Integer.parseInt(server.getString("ip").substring(colon + 1)));
 		} else {
 			System.out.println("Unable to get server list");
 		}
@@ -112,7 +112,7 @@ public class ClientWithSecurity {
 	}
 
 	public static void main(String[] args) {
-		String filename = "/home/ashiswin/rr.txt";
+		String filename = "/home/ashiswin/randomdoc.pdf";
 
 		long timeStarted = System.nanoTime();
 
@@ -269,7 +269,7 @@ public class ClientWithSecurity {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			CP2 protocol = new CP2(aes);
-			byte[] fromFileBuffer = new byte[(int) file.length() / 2];
+			byte[] fromFileBuffer = new byte[20480];
 			int numBytes = 0;
 
 			// Send the file
@@ -277,9 +277,8 @@ public class ClientWithSecurity {
 			for (boolean fileEnded = false; !fileEnded;) {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
 				fileEnded = numBytes < fromFileBuffer.length;
-
+				
 				byte[] encryptedBytes = protocol.encrypt(fromFileBuffer);
-
 				toServer.writeInt(Packet.FILE.getValue());
 				toServer.writeInt(numBytes);
 				toServer.writeInt(encryptedBytes.length);

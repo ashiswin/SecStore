@@ -72,6 +72,13 @@ public class Handler {
 				protocol = new CP1(Server.privateKey);
 				System.out.println("Established protocol CP1");
 				break;
+			case CP2:
+				//Read Encrypted AES key
+				//Decrypt AES key
+				//Put into protocol
+
+				System.out.println("Established protocol CP2");
+
 			default:
 				System.err.println("Unknown protocol requested");
 				protocol = null;

@@ -106,87 +106,13 @@ public class ClientWithSecurity {
 
 		return null;
 	}
-	
+
 	public static void main(String[] args) {
-	    String filename = "/home/ashiswin/rr.txt";
-
-		Socket clientSocket = null;
-
-		DataOutputStream toServer = null;
-		DataInputStream fromServer = null;
+		String filename = "./rr.txt";
 
 		long timeStarted = System.nanoTime();
 
-		try {
-
-			System.out.println("Establishing connection to server...");
-
-			// Connect to server and get the input and output streams
-			clientSocket = findServer();
-			if(clientSocket == null) {
-				System.exit(-1);
-			}
-			toServer = new DataOutputStream(clientSocket.getOutputStream());
-			fromServer = new DataInputStream(clientSocket.getInputStream());
-			System.out.println("Sending HELO...");
-			toServer.writeInt(Packet.HELO.getValue());
-			toServer.writeInt(HELO.getBytes().length);
-			toServer.write(HELO.getBytes());
-			toServer.flush();
-			
-			int welcomeLength = fromServer.readInt();
-			byte[] welcome = new byte[welcomeLength];
-			fromServer.read(welcome);
-			
-			System.out.println("Received welcome!");
-			System.out.println("Requesting server certificate...");
-			
-			toServer.writeInt(Packet.CERT.getValue());
-			toServer.flush();
-			
-			int certLength = fromServer.readInt();
-			byte[] cert = new byte[certLength];
-			fromServer.read(cert);
-	
-			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			serverCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(cert));
-
-			System.out.println("Received server certificate!");
-			System.out.println("Verifying server certificate with " + CA_CERT_PATH + "...");
-			X509Certificate CAcert = (X509Certificate) cf.generateCertificate(ClientWithSecurity.class.getResourceAsStream(CA_CERT_PATH));
-			PublicKey key = CAcert.getPublicKey();
-			
-			serverCert.checkValidity();
-			serverCert.verify(key);
-			
-			System.out.println("Verified server certificate!");
-			System.out.println("Verifying welcome message...");
-			
-			Signature dsa = Signature.getInstance(SHA1_WITH_RSA, SUN_JSSE);
-			dsa.initVerify(serverCert.getPublicKey());
-			dsa.update(WELCOME_MESSAGE.getBytes("UTF-8"));
-			if(!dsa.verify(welcome)) {
-				System.err.println("Verification failed! Terminating file transfer");
-				System.exit(-1);
-			}
-			
-			System.out.println("Verified welcome message!");
-			
-			System.out.println("Establishing protocol");
-			toServer.writeInt(Packet.PROTOCOL.getValue());
-			toServer.writeInt(Protocol.CP1.ordinal());
-			System.out.println("Established protocol CP1");
-			
-			System.out.println("Sending file...");
-			
-			sendWithCP1(filename, toServer, fromServer);
-			
-			System.out.println("Closing connection...");
-			toServer.writeInt(Packet.EOS.getValue());
-			toServer.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		runCP1(filename);
 
 		long timeTaken = System.nanoTime() - timeStarted;
 		System.out.println("Program took: " + timeTaken/1000000.0 + "ms to run");
@@ -237,6 +163,82 @@ public class ClientWithSecurity {
 			bufferedFileInputStream.close();
 			fileInputStream.close();
 		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void runCP1(String filename){
+		try {
+			Socket clientSocket = null;
+
+			DataOutputStream toServer = null;
+			DataInputStream fromServer = null;
+			System.out.println("Establishing connection to server...");
+
+			// Connect to server and get the input and output streams
+			clientSocket = findServer();
+			if(clientSocket == null) {
+				System.exit(-1);
+			}
+			toServer = new DataOutputStream(clientSocket.getOutputStream());
+			fromServer = new DataInputStream(clientSocket.getInputStream());
+			System.out.println("Sending HELO...");
+			toServer.writeInt(Packet.HELO.getValue());
+			toServer.writeInt(HELO.getBytes().length);
+			toServer.write(HELO.getBytes());
+			toServer.flush();
+
+			int welcomeLength = fromServer.readInt();
+			byte[] welcome = new byte[welcomeLength];
+			fromServer.read(welcome);
+
+			System.out.println("Received welcome!");
+			System.out.println("Requesting server certificate...");
+
+			toServer.writeInt(Packet.CERT.getValue());
+			toServer.flush();
+
+			int certLength = fromServer.readInt();
+			byte[] cert = new byte[certLength];
+			fromServer.read(cert);
+
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			serverCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(cert));
+
+			System.out.println("Received server certificate!");
+			System.out.println("Verifying server certificate with " + CA_CERT_PATH + "...");
+			X509Certificate CAcert = (X509Certificate) cf.generateCertificate(ClientWithSecurity.class.getResourceAsStream(CA_CERT_PATH));
+			PublicKey key = CAcert.getPublicKey();
+
+			serverCert.checkValidity();
+			serverCert.verify(key);
+
+			System.out.println("Verified server certificate!");
+			System.out.println("Verifying welcome message...");
+
+			Signature dsa = Signature.getInstance(SHA1_WITH_RSA, SUN_JSSE);
+			dsa.initVerify(serverCert.getPublicKey());
+			dsa.update(WELCOME_MESSAGE.getBytes("UTF-8"));
+			if(!dsa.verify(welcome)) {
+				System.err.println("Verification failed! Terminating file transfer");
+				System.exit(-1);
+			}
+
+			System.out.println("Verified welcome message!");
+
+			System.out.println("Establishing protocol");
+			toServer.writeInt(Packet.PROTOCOL.getValue());
+			toServer.writeInt(Protocol.CP1.ordinal());
+			System.out.println("Established protocol CP1");
+
+			System.out.println("Sending file...");
+
+			sendWithCP1(filename, toServer, fromServer);
+
+			System.out.println("Closing connection...");
+			toServer.writeInt(Packet.EOS.getValue());
+			toServer.flush();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -18,7 +18,6 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 import java.util.GregorianCalendar;
 
 import org.json.JSONArray;
@@ -35,7 +34,6 @@ public class ClientWithSecurity {
 	private static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
 	private static final String SHA1_WITH_RSA = "SHA1withRSA";
 	private static final String SUN_JSSE = "SunJSSE";
-	private static final String RSA = "RSA";
 	private static final String SERVER_LIST = "http://devostrum.no-ip.info/secstore/Servers.php";
 	
 	private static X509Certificate serverCert;
@@ -99,6 +97,8 @@ public class ClientWithSecurity {
 			}
 			
 			JSONObject server = servers.getJSONObject(minServer);
+			System.out.println("Using server " + server.getString("ip") + ":" + server.getInt("port") + "\n\n");
+			
 			return new Socket(server.getString("ip"), server.getInt("port"));
 		} else {
 			System.out.println("Unable to get server list");
@@ -233,7 +233,6 @@ public class ClientWithSecurity {
 			int numBytes = 0;
 			
 			// Send the file
-			// TODO: Encrypt blocks with RSA
 			int count = 0;
 			for (boolean fileEnded = false; !fileEnded;) {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);

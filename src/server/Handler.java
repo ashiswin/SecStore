@@ -70,7 +70,7 @@ public class Handler {
 	}
 	
 	/*
-	 * handleFilename(): Handle the initation of a new file transfer
+	 * handleFilename(): Handle the initiation of a new file transfer
 	 */
 	public static BufferedOutputStream handleFilename(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
 		System.out.println("Receiving file...");
@@ -86,6 +86,9 @@ public class Handler {
 		return new BufferedOutputStream(fileOutputStream);
 	}
 	
+	/*
+	 * handleFile(): Handle receiving a new chunk of a file
+	 */
 	public static boolean handleFile(DataInputStream fromClient, DataOutputStream toClient, BufferedOutputStream bufferedFileOutputStream) throws IOException {
 		int numBytes = fromClient.readInt();
 		if (numBytes > 0) {

@@ -46,7 +46,7 @@ public class ServerThread extends Thread {
 			
 			while(!connectionSocket.isClosed()) {
 				int packetType = fromClient.readInt();
-				Packet packet = Packet.fromId(packetType);
+				Packet packet = Packet.fromInt(packetType);
 				
 				switch(packet) {
 					case HELO:

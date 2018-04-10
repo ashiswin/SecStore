@@ -25,7 +25,7 @@ public enum Packet {
 		return this.value;
 	}
 	
-	public static Packet fromId(int id) {
+	public static Packet fromInt(int id) {
         for (Packet type : Packet.values()) {
             if (type.getValue() == id) {
                 return type;

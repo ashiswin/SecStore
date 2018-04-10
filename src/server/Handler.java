@@ -11,9 +11,13 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import common.AES;
 import common.Protocol;
 import common.protocols.BaseProtocol;
 import common.protocols.CP1;
+import common.protocols.CP2;
+
+import javax.crypto.SecretKey;
 
 public class Handler {
 	/*
@@ -74,10 +78,15 @@ public class Handler {
 				break;
 			case CP2:
 				//Read Encrypted AES key
+				int numBytes = fromClient.readInt();
+				byte[] encryptedAES = new byte[numBytes];
+				fromClient.read(encryptedAES);
 				//Decrypt AES key
+				SecretKey aesDecrypted = AES.decryptAESKey(encryptedAES,Server.privateKey);
 				//Put into protocol
-
+				protocol = new CP2(aesDecrypted);
 				System.out.println("Established protocol CP2");
+				break;
 
 			default:
 				System.err.println("Unknown protocol requested");

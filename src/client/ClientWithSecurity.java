@@ -20,6 +20,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.GregorianCalendar;
 
+import common.protocols.CP2;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +28,9 @@ import org.json.JSONObject;
 import common.Packet;
 import common.Protocol;
 import common.protocols.CP1;
+import common.AES;
+
+import javax.crypto.SecretKey;
 
 public class ClientWithSecurity {
 	private static final String CA_CERT_PATH = "CA.crt";
@@ -243,7 +247,142 @@ public class ClientWithSecurity {
 		}
 	}
 	
-	public static void sendWithCP2(String filename, DataOutputStream toServer, DataInputStream fromServer) {
+	public static void sendWithCP2(String filename, DataOutputStream toServer, DataInputStream fromServer, SecretKey aes) {
 		// TODO: Implement CP2 (exchange AES key and encrypt with AES)
+		try {
+			// Send the filename
+			toServer.writeInt(Packet.FILENAME.getValue());
+			toServer.writeInt(filename.substring(filename.lastIndexOf("/") + 1).getBytes().length);
+			toServer.write(filename.substring(filename.lastIndexOf("/") + 1).getBytes());
+			toServer.flush();
+
+			// Open the file
+			File file = new File(filename);
+			if(!file.exists()) {
+				System.err.println("File has problem");
+				System.exit(-1);
+			}
+			if(file.length() == 0) {
+				System.err.println("Empty file");
+				System.exit(-1);
+			}
+
+			FileInputStream fileInputStream = new FileInputStream(file);
+			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
+			CP2 protocol = new CP2(aes);
+			byte [] fromFileBuffer = new byte[117];
+			int numBytes = 0;
+
+			// Send the file
+			int count = 0;
+			for (boolean fileEnded = false; !fileEnded;) {
+				numBytes = bufferedFileInputStream.read(fromFileBuffer);
+				fileEnded = numBytes < fromFileBuffer.length;
+
+				byte[] encryptedBytes = protocol.encrypt(fromFileBuffer);
+
+				toServer.writeInt(Packet.FILE.getValue());
+				toServer.writeInt(numBytes);
+				toServer.writeInt(encryptedBytes.length);
+				toServer.write(encryptedBytes, 0, encryptedBytes.length);
+
+				toServer.flush();
+				count++;
+			}
+			System.out.println("Sent " + count + " blocks");
+			bufferedFileInputStream.close();
+			fileInputStream.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	public static void runCP2(String filename){
+		try {
+			Socket clientSocket = null;
+
+			DataOutputStream toServer = null;
+			DataInputStream fromServer = null;
+			System.out.println("Establishing connection to server...");
+
+			// Connect to server and get the input and output streams
+			clientSocket = findServer();
+			if(clientSocket == null) {
+				System.exit(-1);
+			}
+			toServer = new DataOutputStream(clientSocket.getOutputStream());
+			fromServer = new DataInputStream(clientSocket.getInputStream());
+			System.out.println("Sending HELO...");
+			toServer.writeInt(Packet.HELO.getValue());
+			toServer.writeInt(HELO.getBytes().length);
+			toServer.write(HELO.getBytes());
+			toServer.flush();
+
+			int welcomeLength = fromServer.readInt();
+			byte[] welcome = new byte[welcomeLength];
+			fromServer.read(welcome);
+
+			System.out.println("Received welcome!");
+			System.out.println("Requesting server certificate...");
+
+			toServer.writeInt(Packet.CERT.getValue());
+			toServer.flush();
+
+			int certLength = fromServer.readInt();
+			byte[] cert = new byte[certLength];
+			fromServer.read(cert);
+
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			serverCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(cert));
+
+			System.out.println("Received server certificate!");
+			System.out.println("Verifying server certificate with " + CA_CERT_PATH + "...");
+			X509Certificate CAcert = (X509Certificate) cf.generateCertificate(ClientWithSecurity.class.getResourceAsStream(CA_CERT_PATH));
+			PublicKey key = CAcert.getPublicKey();
+
+			serverCert.checkValidity();
+			serverCert.verify(key);
+
+			System.out.println("Verified server certificate!");
+			System.out.println("Verifying welcome message...");
+
+			Signature dsa = Signature.getInstance(SHA1_WITH_RSA, SUN_JSSE);
+			dsa.initVerify(serverCert.getPublicKey());
+			dsa.update(WELCOME_MESSAGE.getBytes("UTF-8"));
+			if(!dsa.verify(welcome)) {
+				System.err.println("Verification failed! Terminating file transfer");
+				System.exit(-1);
+			}
+
+			System.out.println("Verified welcome message!");
+
+			//Generate AES key
+			SecretKey aes = AES.generateKey();
+			//Encrypt AES key
+			byte[] aesEncrypted = AES.encryptAESKey(aes,serverCert.getPublicKey());
+
+			System.out.println("Establishing protocol");
+			toServer.writeInt(Packet.PROTOCOL.getValue());
+			toServer.writeInt(Protocol.CP2.ordinal());
+			//Send the number of bytes of  encrypted aes key
+			toServer.writeInt(aesEncrypted.length);
+			//Send encrypted aes key
+			toServer.write(aesEncrypted);
+
+
+
+			System.out.println("Established protocol CP2");
+
+			System.out.println("Sending file...");
+
+			sendWithCP2(filename, toServer, fromServer, aes);
+
+			System.out.println("Closing connection...");
+			toServer.writeInt(Packet.EOS.getValue());
+			toServer.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

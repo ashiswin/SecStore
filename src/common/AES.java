@@ -11,7 +11,7 @@ import java.security.SecureRandom;
  * Created by Oon Tong on 4/10/2018.
  */
 public class AES {
-    public SecretKey generateKey(){
+    public static SecretKey generateKey(){
         KeyGenerator keyGen = null;
         try {
             keyGen = KeyGenerator.getInstance("AES");
@@ -24,7 +24,7 @@ public class AES {
         return null;
     }
 
-    public byte[] encryptAESKey(SecretKey aes,Key publicKey){
+    public static byte[] encryptAESKey(SecretKey aes,Key publicKey){
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -36,7 +36,7 @@ public class AES {
         return null;
     }
 
-    public SecretKey decryptAESKey(byte[] aesEncrypted, Key privateKey){
+    public static SecretKey decryptAESKey(byte[] aesEncrypted, Key privateKey){
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);

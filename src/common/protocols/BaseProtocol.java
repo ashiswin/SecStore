@@ -1,4 +1,6 @@
-package common;
+package common.protocols;
+
+import common.Protocol;
 
 public abstract class BaseProtocol {
 	Protocol protocol;

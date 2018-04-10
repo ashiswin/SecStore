@@ -50,7 +50,7 @@ public class Server {
 			
 			// Load private/public key pair
 			System.out.println("Loading key pair from " + PRIVATE_KEY_FILE);
-			keyFile = new File(Server.class.getResource(PRIVATE_KEY_FILE).getFile());
+			keyFile = new File(PRIVATE_KEY_FILE);
 			dsa = Signature.getInstance(SHA1_WITH_RSA, SUN_JSSE);
 			keyFactory = KeyFactory.getInstance(RSA, SUN_JSSE);
 

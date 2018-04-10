@@ -1,4 +1,4 @@
-package common;
+package common.protocols;
 
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -8,6 +8,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import common.Protocol;
 
 public class CP1 extends BaseProtocol {
 	Key key;

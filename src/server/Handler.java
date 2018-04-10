@@ -1,6 +1,5 @@
 package server;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,10 +7,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
-import common.BaseProtocol;
-import common.CP1;
 import common.Protocol;
+import common.protocols.BaseProtocol;
+import common.protocols.CP1;
 
 public class Handler {
 	/*
@@ -42,33 +44,17 @@ public class Handler {
 	/*
 	 * handleCert(): Handle request for server's certificate
 	 */
-	public static void handleCert(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
+	public static void handleCert(DataInputStream fromClient, DataOutputStream toClient) throws IOException, CertificateException {
 		System.out.println("Sending server certificate...");
+
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		X509Certificate cert = (X509Certificate) cf.generateCertificate(new FileInputStream(new File(Server.SERVER_CERT_FILE)));
 		
-		File cert = new File(Server.class.getResource(Server.SERVER_CERT_FILE).getFile());
-		FileInputStream fileInputStream = new FileInputStream(cert);
-		BufferedInputStream bis = new BufferedInputStream(fileInputStream);
-		byte [] fromFileBuffer = new byte[(int) cert.length()];
-		
-		toClient.writeInt((int) cert.length());
+		byte[] encodedCert = cert.getEncoded();
+		System.out.println("Cert length: " + encodedCert.length);
+		toClient.writeInt(encodedCert.length);
 		toClient.flush();
-		
-		int numBytes = 0;
-		
-		for (boolean fileEnded = false; !fileEnded;) {
-			numBytes = bis.read(fromFileBuffer);
-			fileEnded = numBytes < fromFileBuffer.length;
-			
-			toClient.writeInt(1);
-			toClient.writeInt(numBytes);
-			if(numBytes > 0) {
-				toClient.write(fromFileBuffer);
-			}
-			toClient.flush();
-		}
-		
-		bis.close();
-		toClient.flush();
+		toClient.write(encodedCert);
 		
 		System.out.println("Sent server certificate");
 	}

@@ -24,9 +24,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import common.CP1;
 import common.Packet;
 import common.Protocol;
+import common.protocols.CP1;
 
 public class ClientWithSecurity {
 	private static final String CA_CERT_PATH = "CA.crt";
@@ -34,7 +34,7 @@ public class ClientWithSecurity {
 	private static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
 	private static final String SHA1_WITH_RSA = "SHA1withRSA";
 	private static final String SUN_JSSE = "SunJSSE";
-	private static final String SERVER_LIST = "http://devostrum.no-ip.info/secstore/Servers.php";
+	private static final String SERVER_LIST = "http://www.secstore.stream/Servers.php";
 	
 	private static X509Certificate serverCert;
 	public static long ping(String ipAddress) {
@@ -146,23 +146,8 @@ public class ClientWithSecurity {
 			
 			int certLength = fromServer.readInt();
 			byte[] cert = new byte[certLength];
-			
-			int read = fromServer.readInt();
-			int offset = 0;
-			
-			while(read == 1) {
-				int length = fromServer.readInt();
-				if(length == -1) break;
-				byte[] block = new byte[length];
-				fromServer.read(block);
-				for(int i = 0; i < length; i++) {
-					cert[offset + i] = block[i];
-				}
-				offset += length;
-				
-				read = fromServer.readInt();
-			}
-			
+			fromServer.read(cert);
+	
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			serverCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(cert));
 

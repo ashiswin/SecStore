@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.SignatureException;
+import java.security.cert.CertificateException;
 
-import common.BaseProtocol;
 import common.Packet;
+import common.protocols.BaseProtocol;
 
 public class ServerThread extends Thread {
 	// Client connection variables
@@ -95,6 +96,8 @@ public class ServerThread extends Thread {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
 			e.printStackTrace();
 		}
 	}

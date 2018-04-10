@@ -14,6 +14,7 @@ public enum Packet {
 	
 	// Packets from server to client
 	
+	// Packets from server to server
 	;
 	
 	private int value;

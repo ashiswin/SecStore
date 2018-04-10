@@ -12,6 +12,7 @@ public class ServerConnector {
 	private static final String COLUMN_IP = "ip";
 	private static final String COLUMN_PORT = "port";
 	private static final String COLUMN_SCRATCH = "scratch";
+	@SuppressWarnings("unused")
 	private static final String COLUMN_HEARTBEAT = "heartbeat";
 	
 	private Connection connect;

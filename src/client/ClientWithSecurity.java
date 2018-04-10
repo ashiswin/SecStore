@@ -14,6 +14,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
@@ -21,6 +23,7 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.GregorianCalendar;
 
+import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 
 import org.json.JSONArray;
@@ -271,7 +274,7 @@ public class ClientWithSecurity {
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			CP2 protocol = new CP2(aes);
 			
-			byte[] fromFileBuffer = new byte[2048];
+			/*byte[] fromFileBuffer = new byte[2048];
 			int numBytes = 0;
 
 			// Send the file
@@ -282,7 +285,7 @@ public class ClientWithSecurity {
 				if(numBytes < 0) break;
 				
 				byte[] encryptedBytes = protocol.encrypt(fromFileBuffer);
-				//System.out.println(count + ": " + Base64.getEncoder().encodeToString(encryptedBytes) + "\n");
+				System.out.println(count + ": " + Base64.getEncoder().encodeToString(encryptedBytes) + "\n");
 				toServer.writeInt(Packet.FILE.getValue());
 				toServer.writeInt(numBytes);
 				toServer.writeInt(encryptedBytes.length);
@@ -291,7 +294,16 @@ public class ClientWithSecurity {
 				toServer.flush();
 				count++;
 			}
-			System.out.println("Sent " + count + " blocks");
+			System.out.println("Sent " + count + " blocks");*/
+			toServer.writeInt(Packet.FILE.getValue());
+			//CipherOutputStream stream = new CipherOutputStream(toServer, protocol.getEncryptCipher());
+			byte[] fileBytes = Files.readAllBytes(Paths.get(filename));
+			byte[] encrypted = protocol.encrypt(fileBytes);
+			
+			toServer.writeInt(encrypted.length);
+			toServer.write(encrypted, 0, encrypted.length);
+			toServer.flush();
+			//stream.close();
 			bufferedFileInputStream.close();
 			fileInputStream.close();
 		} catch(Exception e) {

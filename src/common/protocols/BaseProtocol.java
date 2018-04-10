@@ -9,6 +9,10 @@ public abstract class BaseProtocol {
 		this.protocol = protocol;
 	}
 	
+	public Protocol getProtocol() {
+		return protocol;
+	}
+	
 	public abstract byte[] encrypt(byte[] plaintext);
 	public abstract byte[] decrypt(byte[] ciphertext);
 }

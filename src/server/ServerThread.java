@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.SignatureException;
 
+import common.BaseProtocol;
 import common.Packet;
 
 public class ServerThread extends Thread {
@@ -20,7 +21,7 @@ public class ServerThread extends Thread {
 	// Data variables
 	byte[] signedWelcome;
 	boolean established = false;
-	
+	BaseProtocol protocol;
 	
 	BufferedOutputStream bufferedFileOutputStream;
 	
@@ -59,6 +60,9 @@ public class ServerThread extends Thread {
 						}
 						Handler.handleCert(fromClient, toClient);
 						break;
+					case PROTOCOL:
+						protocol = Handler.handleProtocol(fromClient, toClient);
+						break;
 					case FILENAME:
 						if(!established) {
 							sendEstablishError();
@@ -71,7 +75,7 @@ public class ServerThread extends Thread {
 							sendEstablishError();
 							break;
 						}
-						if(Handler.handleFile(fromClient, toClient, bufferedFileOutputStream)) {
+						if(Handler.handleFile(fromClient, toClient, bufferedFileOutputStream, protocol)) {
 							count++;
 						}
 						break;

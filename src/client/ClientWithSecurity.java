@@ -18,13 +18,16 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.GregorianCalendar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import common.CP1;
 import common.Packet;
+import common.Protocol;
 
 public class ClientWithSecurity {
 	private static final String CA_CERT_PATH = "CA.crt";
@@ -35,6 +38,7 @@ public class ClientWithSecurity {
 	private static final String RSA = "RSA";
 	private static final String SERVER_LIST = "http://devostrum.no-ip.info/secstore/Servers.php";
 	
+	private static X509Certificate serverCert;
 	public static long ping(String ipAddress) {
 		try {
 			InetAddress inet = InetAddress.getByName(ipAddress);
@@ -160,7 +164,7 @@ public class ClientWithSecurity {
 			}
 			
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			X509Certificate serverCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(cert));
+			serverCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(cert));
 
 			System.out.println("Received server certificate!");
 			System.out.println("Verifying server certificate with " + CA_CERT_PATH + "...");
@@ -182,6 +186,12 @@ public class ClientWithSecurity {
 			}
 			
 			System.out.println("Verified welcome message!");
+			
+			System.out.println("Establishing protocol");
+			toServer.writeInt(Packet.PROTOCOL.getValue());
+			toServer.writeInt(Protocol.CP1.ordinal());
+			System.out.println("Established protocol CP1");
+			
 			System.out.println("Sending file...");
 			
 			sendWithCP1(filename, toServer, fromServer);
@@ -218,6 +228,7 @@ public class ClientWithSecurity {
 		    
 			FileInputStream fileInputStream = new FileInputStream(file);
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
+			CP1 protocol = new CP1(serverCert.getPublicKey());
 			byte [] fromFileBuffer = new byte[117];
 			int numBytes = 0;
 			
@@ -228,9 +239,13 @@ public class ClientWithSecurity {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
 				fileEnded = numBytes < fromFileBuffer.length;
 
+				byte[] encryptedBytes = protocol.encrypt(fromFileBuffer);
+				
 				toServer.writeInt(Packet.FILE.getValue());
 				toServer.writeInt(numBytes);
-				toServer.write(fromFileBuffer, 0, numBytes);
+				toServer.writeInt(encryptedBytes.length);
+				toServer.write(encryptedBytes, 0, encryptedBytes.length);
+				
 				toServer.flush();
 				count++;
 			}

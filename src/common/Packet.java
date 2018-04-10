@@ -9,7 +9,8 @@ public enum Packet {
 	FILENAME(5), // Transmit filename for new file transfer
 	FILE(6), // Transmit file chunk
 	EOF(7), // Indicate file completion
-	EOS(8) // End of session, de-authenticate session token
+	EOS(8), // End of session, de-authenticate session token
+	PROTOCOL(9), // Set protocol for files
 	
 	// Packets from server to client
 	

@@ -9,6 +9,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import common.BaseProtocol;
+import common.CP1;
+import common.Protocol;
+
 public class Handler {
 	/*
 	 * handleHelo(): Handle an initiation packet from the client and verify that it is valid
@@ -70,6 +74,26 @@ public class Handler {
 	}
 	
 	/*
+	 * handleProtocl(): Handle the setting of the communication protocol
+	 */
+	public static BaseProtocol handleProtocol(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
+		System.out.println("Receiving protocol...");
+		Protocol p = Protocol.fromInt(fromClient.readInt());
+		BaseProtocol protocol;
+		
+		switch(p) {
+			case CP1:
+				protocol = new CP1(Server.privateKey);
+				System.out.println("Established protocol CP1");
+				break;
+			default:
+				System.err.println("Unknown protocol requested");
+				protocol = null;
+		}
+		
+		return protocol;
+	}
+	/*
 	 * handleFilename(): Handle the initiation of a new file transfer
 	 */
 	public static BufferedOutputStream handleFilename(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
@@ -89,12 +113,15 @@ public class Handler {
 	/*
 	 * handleFile(): Handle receiving a new chunk of a file
 	 */
-	public static boolean handleFile(DataInputStream fromClient, DataOutputStream toClient, BufferedOutputStream bufferedFileOutputStream) throws IOException {
+	public static boolean handleFile(DataInputStream fromClient, DataOutputStream toClient, BufferedOutputStream bufferedFileOutputStream, BaseProtocol protocol) throws IOException {
+		int decryptedNumBytes = fromClient.readInt();
 		int numBytes = fromClient.readInt();
 		if (numBytes > 0) {
 			byte[] block = new byte[numBytes];
 			fromClient.read(block);
-			bufferedFileOutputStream.write(block, 0, numBytes);
+			
+			byte[] decryptedBytes = protocol.decrypt(block);
+			bufferedFileOutputStream.write(decryptedBytes, 0, decryptedNumBytes);
 			
 			return true;
 		}

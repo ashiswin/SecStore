@@ -46,28 +46,46 @@ public class ServerThread extends Thread {
 			
 			while(!connectionSocket.isClosed()) {
 				int packetType = fromClient.readInt();
+				Packet packet = Packet.fromId(packetType);
 				
-				if (established && packetType == Packet.FILENAME.getValue()) { // If the packet is for transferring the filename
-					bufferedFileOutputStream = Handler.handleFilename(fromClient, toClient);
-				}
-				else if (established && packetType == Packet.FILE.getValue()) { // If the packet is for transferring a chunk of the file
-					if(Handler.handleFile(fromClient, toClient, bufferedFileOutputStream)) {
-						count++;
-					}
-				} else if (packetType == Packet.EOS.getValue()) { // If packet is for session termination
-					System.out.println("Received " + count + " blocks");
-					System.out.println("Closing connection...");
-	
-					if (bufferedFileOutputStream != null) bufferedFileOutputStream.close();
-					fromClient.close();
-					toClient.close();
-					connectionSocket.close();
-				}
-				else if(packetType == Packet.HELO.getValue()) { // If packet is for initiation of communication
-					established = Handler.handleHelo(fromClient, toClient, signedWelcome);
-				}
-				else if(established && packetType == Packet.CERT.getValue()) { // If packet is for requesting server certificate
-					Handler.handleCert(fromClient, toClient);
+				switch(packet) {
+					case HELO:
+						established = Handler.handleHelo(fromClient, toClient, signedWelcome);
+						break;
+					case CERT:
+						if(!established) {
+							sendEstablishError();
+							break;
+						}
+						Handler.handleCert(fromClient, toClient);
+						break;
+					case FILENAME:
+						if(!established) {
+							sendEstablishError();
+							break;
+						}
+						bufferedFileOutputStream = Handler.handleFilename(fromClient, toClient);
+						break;
+					case FILE:
+						if(!established) {
+							sendEstablishError();
+							break;
+						}
+						if(Handler.handleFile(fromClient, toClient, bufferedFileOutputStream)) {
+							count++;
+						}
+						break;
+					case EOS:
+						System.out.println("Received " + count + " blocks");
+						System.out.println("Closing connection...");
+		
+						if (bufferedFileOutputStream != null) bufferedFileOutputStream.close();
+						fromClient.close();
+						toClient.close();
+						connectionSocket.close();
+						break;
+					default:
+						sendInvalidPacketError();
 				}
 			}
 		} catch(FileNotFoundException e) {
@@ -77,5 +95,11 @@ public class ServerThread extends Thread {
 		}
 	}
 	
+	public void sendEstablishError() {
+		// TODO: Implement error sending
+	}
 	
+	public void sendInvalidPacketError() {
+		// TODO: Implement error sending
+	}
 }

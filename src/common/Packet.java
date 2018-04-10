@@ -24,4 +24,13 @@ public enum Packet {
 	public int getValue() {
 		return this.value;
 	}
+	
+	public static Packet fromId(int id) {
+        for (Packet type : Packet.values()) {
+            if (type.getValue() == id) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

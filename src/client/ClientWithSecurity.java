@@ -269,7 +269,7 @@ public class ClientWithSecurity {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			CP2 protocol = new CP2(aes);
-			byte[] fromFileBuffer = new byte[20480];
+			byte[] fromFileBuffer = new byte[177];
 			int numBytes = 0;
 
 			// Send the file

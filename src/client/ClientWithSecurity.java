@@ -116,7 +116,7 @@ public class ClientWithSecurity {
 
 		long timeStarted = System.nanoTime();
 
-		runCP1(filename);
+		runCP2(filename);
 
 		long timeTaken = System.nanoTime() - timeStarted;
 		System.out.println("Program took: " + timeTaken/1000000.0 + "ms to run");

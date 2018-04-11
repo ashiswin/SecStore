@@ -155,6 +155,9 @@ public class Handler {
 	}
 	
 	public static void handlePing(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
-		toClient.writeInt(0);
+		System.out.println("Received PING");
+		toClient.writeInt(1);
+		toClient.flush();
+		System.out.println("Sent PONG");
 	}
 }

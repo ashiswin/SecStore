@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -20,10 +19,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
-import java.util.GregorianCalendar;
 
-import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 
 import org.json.JSONArray;
@@ -47,6 +43,7 @@ public class ClientWithSecurity {
 	private static X509Certificate serverCert;
 	public static long ping(String ipAddress) {
 		try {
+			System.out.println("Pinging " + ipAddress);
 			int colon = ipAddress.indexOf(":");
 			Socket ping = new Socket(ipAddress.substring(0, colon), Integer.parseInt(ipAddress.substring(colon + 1)));
 			DataInputStream fromServer = new DataInputStream(ping.getInputStream());
@@ -55,6 +52,9 @@ public class ClientWithSecurity {
 			toServer.writeInt(Packet.PING.getValue());
 			fromServer.readInt();
 			long end = System.currentTimeMillis() - start;
+			
+			toServer.writeInt(Packet.EOS.getValue());
+			
 			fromServer.close();
 			toServer.close();
 			ping.close();
@@ -62,7 +62,8 @@ public class ClientWithSecurity {
 			return end;
 			
 	    } catch ( Exception e ) {
-	    	System.out.println("Exception:" + e.getMessage());
+	    	//System.out.println("Exception:" + e.getMessage());
+	    	e.printStackTrace();
 	    }
 		
 		return -1;
@@ -96,7 +97,7 @@ public class ClientWithSecurity {
 			
 			for(int i = 0; i < servers.length(); i++) {
 				JSONObject server = servers.getJSONObject(i);
-				long rtt = ping(server.getString("ip").substring(0, server.getString("ip").indexOf(":")));
+				long rtt = ping(server.getString("ip"));
 				if(rtt >= 0 && rtt < min) {
 					min = rtt;
 					minServer = i;

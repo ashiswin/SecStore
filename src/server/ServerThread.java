@@ -90,6 +90,9 @@ public class ServerThread extends Thread {
 						toClient.close();
 						connectionSocket.close();
 						break;
+					case PING:
+						Handler.handlePing(fromClient, toClient);
+						break;
 					default:
 						sendInvalidPacketError();
 				}

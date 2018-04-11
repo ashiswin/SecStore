@@ -11,6 +11,7 @@ public enum Packet {
 	EOF(7), // Indicate file completion
 	EOS(8), // End of session, de-authenticate session token
 	PROTOCOL(9), // Set protocol for files
+	PING(10), // Accept a ping request from client
 	
 	// Packets from server to client
 	

@@ -12,7 +12,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 
-import javax.crypto.CipherInputStream;
 import javax.crypto.SecretKey;
 
 import common.AES;
@@ -153,5 +152,9 @@ public class Handler {
 		}
 		
 		return false;
+	}
+	
+	public static void handlePing(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
+		toClient.writeInt(0);
 	}
 }

@@ -47,21 +47,20 @@ public class ClientWithSecurity {
 	private static X509Certificate serverCert;
 	public static long ping(String ipAddress) {
 		try {
-			InetAddress inet = InetAddress.getByName(ipAddress);
-		 
-			System.out.println("Sending Ping Request to " + ipAddress);
-	 
-			long finish = 0;
-			long start = new GregorianCalendar().getTimeInMillis();
-	 
-			if (inet.isReachable(5000)){
-				finish = new GregorianCalendar().getTimeInMillis();
-				System.out.println("Ping RTT: " + (finish - start + "ms"));
-				
-				return finish;
-			} else {
-				System.out.println(ipAddress + " NOT reachable.");
-			}
+			int colon = ipAddress.indexOf(":");
+			Socket ping = new Socket(ipAddress.substring(0, colon), Integer.parseInt(ipAddress.substring(colon + 1)));
+			DataInputStream fromServer = new DataInputStream(ping.getInputStream());
+			DataOutputStream toServer = new DataOutputStream(ping.getOutputStream());
+			long start = System.currentTimeMillis();
+			toServer.writeInt(Packet.PING.getValue());
+			fromServer.readInt();
+			long end = System.currentTimeMillis() - start;
+			fromServer.close();
+			toServer.close();
+			ping.close();
+			
+			return end;
+			
 	    } catch ( Exception e ) {
 	    	System.out.println("Exception:" + e.getMessage());
 	    }
@@ -120,7 +119,7 @@ public class ClientWithSecurity {
 
 		long timeStarted = System.nanoTime();
 
-		runCP2(filename);
+		runCP1(filename);
 
 		long timeTaken = System.nanoTime() - timeStarted;
 		System.out.println("Program took: " + timeTaken/1000000.0 + "ms to run");

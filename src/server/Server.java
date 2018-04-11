@@ -19,6 +19,7 @@ public class Server {
 	public static final String SERVER_CERT_FILE = "server.crt";
 	public static final String UPLOAD_DIR = "upload/";
 	public static boolean LOCAL_SERVER = true;
+	public static String NAME = "SecStore Server";
 	public static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
 	
 	// RSA constants
@@ -48,6 +49,9 @@ public class Server {
 			}
 			else if(arr[0].equals("local")) {
 				LOCAL_SERVER = Boolean.parseBoolean(arr[1]);
+			}
+			else if(arr[0].equals("name")) {
+				NAME = arr[1];
 			}
 		}
 		
@@ -122,7 +126,7 @@ public class Server {
 		ServerSocket welcomeSocket = null;
 		Socket connectionSocket = null;
 		
-		HeartbeatThread heartbeat = new HeartbeatThread((LOCAL_SERVER) ? Util.getLocalIP() : Util.getPublicIP(), PORT);
+		HeartbeatThread heartbeat = new HeartbeatThread((LOCAL_SERVER) ? Util.getLocalIP() : Util.getPublicIP(), PORT, NAME);
 		heartbeat.start();
 		
 		try {

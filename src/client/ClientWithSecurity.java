@@ -14,23 +14,27 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.GregorianCalendar;
 
-import common.protocols.CP2;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import common.AES;
 import common.Packet;
 import common.Protocol;
 import common.protocols.CP1;
-import common.AES;
-
-import javax.crypto.SecretKey;
+import common.protocols.CP2;
 
 public class ClientWithSecurity {
 	private static final String CA_CERT_PATH = "CA.crt";
@@ -93,17 +97,17 @@ public class ClientWithSecurity {
 			
 			for(int i = 0; i < servers.length(); i++) {
 				JSONObject server = servers.getJSONObject(i);
-				long rtt = ping(server.getString("ip"));
-				if(rtt > 0 && rtt < min ) {
+				long rtt = ping(server.getString("ip").substring(0, server.getString("ip").indexOf(":")));
+				if(rtt >= 0 && rtt < min) {
 					min = rtt;
 					minServer = i;
 				}
 			}
 			
 			JSONObject server = servers.getJSONObject(minServer);
-			System.out.println("Using server " + server.getString("ip") + ":" + server.getInt("port") + "\n\n");
-			
-			return new Socket(server.getString("ip"), server.getInt("port"));
+			System.out.println("Using server " + server.getString("ip") + "\n\n");
+			int colon = server.getString("ip").indexOf(":");
+			return new Socket(server.getString("ip").substring(0, colon), Integer.parseInt(server.getString("ip").substring(colon + 1)));
 		} else {
 			System.out.println("Unable to get server list");
 		}
@@ -112,7 +116,7 @@ public class ClientWithSecurity {
 	}
 
 	public static void main(String[] args) {
-		String filename = "./rr.txt";
+		String filename = "/home/ashiswin/randomdoc.pdf";
 
 		long timeStarted = System.nanoTime();
 
@@ -248,7 +252,6 @@ public class ClientWithSecurity {
 	}
 	
 	public static void sendWithCP2(String filename, DataOutputStream toServer, DataInputStream fromServer, SecretKey aes) {
-		// TODO: Implement CP2 (exchange AES key and encrypt with AES)
 		try {
 			// Send the filename
 			toServer.writeInt(Packet.FILENAME.getValue());
@@ -270,7 +273,8 @@ public class ClientWithSecurity {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			CP2 protocol = new CP2(aes);
-			byte [] fromFileBuffer = new byte[117];
+			
+			/*byte[] fromFileBuffer = new byte[2048];
 			int numBytes = 0;
 
 			// Send the file
@@ -278,9 +282,10 @@ public class ClientWithSecurity {
 			for (boolean fileEnded = false; !fileEnded;) {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
 				fileEnded = numBytes < fromFileBuffer.length;
-
+				if(numBytes < 0) break;
+				
 				byte[] encryptedBytes = protocol.encrypt(fromFileBuffer);
-
+				System.out.println(count + ": " + Base64.getEncoder().encodeToString(encryptedBytes) + "\n");
 				toServer.writeInt(Packet.FILE.getValue());
 				toServer.writeInt(numBytes);
 				toServer.writeInt(encryptedBytes.length);
@@ -289,7 +294,16 @@ public class ClientWithSecurity {
 				toServer.flush();
 				count++;
 			}
-			System.out.println("Sent " + count + " blocks");
+			System.out.println("Sent " + count + " blocks");*/
+			toServer.writeInt(Packet.FILE.getValue());
+			//CipherOutputStream stream = new CipherOutputStream(toServer, protocol.getEncryptCipher());
+			byte[] fileBytes = Files.readAllBytes(Paths.get(filename));
+			byte[] encrypted = protocol.encrypt(fileBytes);
+			
+			toServer.writeInt(encrypted.length);
+			toServer.write(encrypted, 0, encrypted.length);
+			toServer.flush();
+			//stream.close();
 			bufferedFileInputStream.close();
 			fileInputStream.close();
 		} catch(Exception e) {
@@ -369,8 +383,6 @@ public class ClientWithSecurity {
 			toServer.writeInt(aesEncrypted.length);
 			//Send encrypted aes key
 			toServer.write(aesEncrypted);
-
-
 
 			System.out.println("Established protocol CP2");
 

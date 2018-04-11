@@ -49,6 +49,7 @@ public class ClientWithSecurity {
 			DataInputStream fromServer = new DataInputStream(ping.getInputStream());
 			DataOutputStream toServer = new DataOutputStream(ping.getOutputStream());
 			long start = System.currentTimeMillis();
+			
 			toServer.writeInt(Packet.PING.getValue());
 			fromServer.readInt();
 			long end = System.currentTimeMillis() - start;

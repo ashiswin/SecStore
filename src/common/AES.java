@@ -29,7 +29,6 @@ public class AES {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            System.out.println(Base64.getEncoder().encodeToString(aes.getEncoded()));
             return cipher.doFinal(aes.getEncoded());
 
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
@@ -43,7 +42,6 @@ public class AES {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             SecretKey k = new SecretKeySpec(cipher.doFinal(aesEncrypted), "AES");
-            System.out.println(Base64.getEncoder().encodeToString(k.getEncoded()));
             return k;
 
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {

@@ -117,7 +117,7 @@ public class ClientWithSecurity {
 	}
 
 	public static void main(String[] args) {
-		String filename = "/home/ashiswin/randomdoc.pdf";
+		String filename = "/home/ashiswin/hello.txt";
 
 		long timeStarted = System.nanoTime();
 

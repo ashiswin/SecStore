@@ -86,7 +86,8 @@ public class ServerThread extends Thread {
 						long endTime = System.currentTimeMillis() - startTime;
 						startTime = -1;
 						
-						System.out.println("File transfer too " + endTime + "ms");
+						System.out.println("File transfer complete.");
+						System.out.println("File transfer took " + endTime + "ms");
 						toClient.writeLong(endTime);
 						break;
 					case EOS:

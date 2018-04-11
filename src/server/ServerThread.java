@@ -23,6 +23,7 @@ public class ServerThread extends Thread {
 	byte[] signedWelcome;
 	boolean established = false;
 	BaseProtocol protocol;
+	long startTime = -1;
 	
 	BufferedOutputStream bufferedFileOutputStream;
 	
@@ -70,6 +71,7 @@ public class ServerThread extends Thread {
 							break;
 						}
 						bufferedFileOutputStream = Handler.handleFilename(fromClient, toClient);
+						startTime = System.currentTimeMillis();
 						break;
 					case FILE:
 						if(!established) {
@@ -79,6 +81,13 @@ public class ServerThread extends Thread {
 						if(Handler.handleFile(fromClient, toClient, bufferedFileOutputStream, protocol)) {
 							count++;
 						}
+						break;
+					case EOF:
+						long endTime = System.currentTimeMillis() - startTime;
+						startTime = -1;
+						
+						System.out.println("File transfer too " + endTime + "ms");
+						toClient.writeLong(endTime);
 						break;
 					case EOS:
 						System.out.println("Received " + count + " blocks");

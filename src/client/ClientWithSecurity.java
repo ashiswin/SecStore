@@ -43,7 +43,7 @@ public class ClientWithSecurity {
 	private static X509Certificate serverCert;
 	public static long ping(String ipAddress) {
 		try {
-			System.out.println("Pinging " + ipAddress);
+			System.out.print("Pinging " + ipAddress + "... ");
 			int colon = ipAddress.indexOf(":");
 			Socket ping = new Socket(ipAddress.substring(0, colon), Integer.parseInt(ipAddress.substring(colon + 1)));
 			DataInputStream fromServer = new DataInputStream(ping.getInputStream());
@@ -59,6 +59,7 @@ public class ClientWithSecurity {
 			toServer.close();
 			ping.close();
 			
+			System.out.println(end + "ms");
 			return end;
 			
 	    } catch ( Exception e ) {
@@ -243,6 +244,11 @@ public class ClientWithSecurity {
 
 			sendWithCP1(filename, toServer, fromServer);
 
+			System.out.println("Completing transfer");
+			toServer.writeInt(Packet.EOF.getValue());
+			long transferTime = fromServer.readLong();
+			System.out.println("File transfer time: " + transferTime + "ms");
+			
 			System.out.println("Closing connection...");
 			toServer.writeInt(Packet.EOS.getValue());
 			toServer.flush();
@@ -390,6 +396,11 @@ public class ClientWithSecurity {
 
 			sendWithCP2(filename, toServer, fromServer, aes);
 
+			System.out.println("Completing transfer");
+			toServer.writeInt(Packet.EOF.getValue());
+			long transferTime = fromServer.readLong();
+			System.out.println("File transfer time: " + transferTime + "ms");
+			
 			System.out.println("Closing connection...");
 			toServer.writeInt(Packet.EOS.getValue());
 			toServer.flush();

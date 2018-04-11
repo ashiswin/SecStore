@@ -51,7 +51,10 @@ public class Server {
 				LOCAL_SERVER = Boolean.parseBoolean(arr[1]);
 			}
 			else if(arr[0].equals("name")) {
-				NAME = arr[1];
+				NAME = "";
+				for(int i = 1; i < arr.length; i++) {
+					NAME += arr[i] + " ";
+				}
 			}
 		}
 		

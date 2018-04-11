@@ -26,7 +26,7 @@ public class ServerConnector {
             connect = DriverManager.getConnection("jdbc:mysql://devostrum.no-ip.info/secstore?user=secstore&password=secstore");
             
             heartbeatStatement = connect.prepareStatement("INSERT INTO " + TABLE_NAME + "(`" + COLUMN_IP + "`, `" + COLUMN_NAME + "`) VALUES(?, ?)"
-            		+ "ON DUPLICATE KEY UPDATE `" + COLUMN_SCRATCH + "` = `" + COLUMN_SCRATCH + "` + 1, `" + COLUMN_NAME + "` = ?");
+            		+ "ON DUPLICATE KEY UPDATE `" + COLUMN_SCRATCH + "` = `" + COLUMN_SCRATCH + "` + 1 AND `" + COLUMN_NAME + "` = ?");
 		} catch (Exception e) {
             e.printStackTrace();
         }

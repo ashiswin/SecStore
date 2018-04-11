@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 
 import javax.crypto.SecretKey;
 
@@ -117,15 +116,7 @@ public class Handler {
 	 * handleFile(): Handle receiving a new chunk of a file
 	 */
 	public static boolean handleFile(DataInputStream fromClient, DataOutputStream toClient, BufferedOutputStream bufferedFileOutputStream, BaseProtocol protocol) throws IOException {
-		System.out.println("Receiving chunk with protocol " + protocol.getProtocol());
 		if(protocol.getProtocol() == Protocol.CP2) {
-			/*CP2 p = (CP2) protocol;
-			CipherInputStream stream = new CipherInputStream(fromClient, p.getDecryptCipher());
-		    int nextByte;
-		    while ((nextByte = stream.read()) != -1) {
-		    	bufferedFileOutputStream.write(nextByte);
-		    }*/
-			//stream.close();
 			int len = fromClient.readInt();
 			byte[] ciphertext = new byte[len];
 			int offset = 0;
@@ -143,7 +134,6 @@ public class Handler {
 				byte[] block = new byte[numBytes];
 				fromClient.read(block);
 				
-				System.out.println(Base64.getEncoder().encodeToString(block));
 				byte[] decryptedBytes = protocol.decrypt(block);
 				bufferedFileOutputStream.write(decryptedBytes, 0, decryptedNumBytes);
 				

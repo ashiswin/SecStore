@@ -78,7 +78,6 @@ public class ServerThread extends Thread {
 						}
 						if(Handler.handleFile(fromClient, toClient, bufferedFileOutputStream, protocol)) {
 							count++;
-							System.out.println("" + count);
 						}
 						break;
 					case EOS:

@@ -20,7 +20,7 @@ public class Server {
 	public static final String UPLOAD_DIR = "upload/";
 	public static boolean LOCAL_SERVER = true;
 	public static String NAME = "SecStore Server";
-	private static String SERVER_LIST = "http://www.secstore.stream/Servers.php";
+	public static String SERVER_LIST = "http://www.secstore.stream/Servers.php";
 	public static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
 	
 	// RSA constants

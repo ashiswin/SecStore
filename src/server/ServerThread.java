@@ -114,6 +114,7 @@ public class ServerThread extends Thread {
 						connectionSocket.close();
 						
 						if(protocol != null && protocol.getProtocol() == Protocol.SPLIT_CHUNKS) {
+							System.out.println("Preparing to broadcast");
 							Broadcaster.broadcastChunk(c);
 						}
 						break;

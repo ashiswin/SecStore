@@ -64,6 +64,7 @@ public class Broadcaster {
 		
 		public void run() {
 			try {
+				System.out.println("Broadcasting to " + server.getInetAddress());
 				DataInputStream fromServer = new DataInputStream(server.getInputStream());
 				DataOutputStream toServer = new DataOutputStream(server.getOutputStream());
 				
@@ -74,6 +75,7 @@ public class Broadcaster {
 				toServer.write(data);
 				toServer.flush();
 				toServer.writeInt(Packet.EOS.getValue());
+				System.out.println("Broadcasted to " + server.getInetAddress());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

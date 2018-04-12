@@ -23,7 +23,7 @@ public class Broadcaster {
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
 		int responseCode = con.getResponseCode();
-		System.out.println("GET Response Code :: " + responseCode);
+		System.out.println("Got server list from " + Server.SERVER_LIST);
 		if (responseCode == HttpURLConnection.HTTP_OK) { // success
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;

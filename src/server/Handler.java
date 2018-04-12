@@ -217,6 +217,12 @@ public class Handler {
 	public static void handleSendChunk(DataInputStream fromClient, DataOutputStream toClient) throws IOException, SQLException, NoSuchAlgorithmException {
 		System.out.println("Received chunk from fellow server");
 		int fileId = fromClient.readInt();
+		
+		if((new File(Server.UPLOAD_DIR + fileId).exists())) {
+			System.out.println("Already have full file! Rejecting");
+			return;
+		}
+		
 		int chunkId = fromClient.readInt();
 		int len = fromClient.readInt();
 		byte[] chunk = new byte[len];

@@ -7,11 +7,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.sql.SQLException;
 
+import org.json.JSONException;
+
 import common.Packet;
+import common.Protocol;
 import common.protocols.BaseProtocol;
 
 public class ServerThread extends Thread {
@@ -47,6 +51,7 @@ public class ServerThread extends Thread {
 			fromClient = new DataInputStream(connectionSocket.getInputStream());
 			toClient = new DataOutputStream(connectionSocket.getOutputStream());
 			int count = 0;
+			Chunk c = null;
 			
 			while(!connectionSocket.isClosed()) {
 				int packetType = fromClient.readInt();
@@ -88,7 +93,8 @@ public class ServerThread extends Thread {
 							sendEstablishError();
 							break;
 						}
-						Handler.handleChunk(fromClient, toClient, protocol);
+						c = Handler.handleChunk(fromClient, toClient, protocol);
+						count++;
 						break;
 					case EOF:
 						long endTime = System.currentTimeMillis() - startTime;
@@ -106,9 +112,16 @@ public class ServerThread extends Thread {
 						fromClient.close();
 						toClient.close();
 						connectionSocket.close();
+						
+						if(protocol != null && protocol.getProtocol() == Protocol.SPLIT_CHUNKS) {
+							Broadcaster.broadcastChunk(c);
+						}
 						break;
 					case PING:
 						Handler.handlePing(fromClient, toClient);
+						break;
+					case SEND_CHUNK:
+						Handler.handleSendChunk(fromClient, toClient);
 						break;
 					default:
 						sendInvalidPacketError();
@@ -121,6 +134,10 @@ public class ServerThread extends Thread {
 		} catch (CertificateException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 	}

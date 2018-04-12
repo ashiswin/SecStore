@@ -17,6 +17,7 @@ public enum Packet {
 	// Packets from server to client
 	
 	// Packets from server to server
+	SEND_CHUNK(200), // Chunk sent from another server
 	;
 	
 	private int value;

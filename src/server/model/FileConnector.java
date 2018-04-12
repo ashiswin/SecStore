@@ -11,13 +11,14 @@ public class FileConnector {
 	private static FileConnector instance = null;
 	
 	private static final String TABLE_NAME = "files";
-	private static final String COLUMN_ID = "id";
-	private static final String COLUMN_FILENAME = "filename";
-	private static final String COLUMN_OWNER = "owner";
-	private static final String COLUMN_CHECKSUM = "checksum";
-	private static final String COLUMN_SIZE = "size";
+	public static final String COLUMN_ID = "id";
+	public static final String COLUMN_FILENAME = "filename";
+	public static final String COLUMN_OWNER = "owner";
+	public static final String COLUMN_CHECKSUM = "checksum";
+	public static final String COLUMN_SIZE = "size";
 	
 	private Connection connect;
+	private PreparedStatement selectStatement;
 	private PreparedStatement createStatement;
 	
 	private FileConnector() {
@@ -27,6 +28,7 @@ public class FileConnector {
             // Setup the connection with the DB
             connect = DriverManager.getConnection("jdbc:mysql://devostrum.no-ip.info/secstore?user=secstore&password=secstore");
             
+            selectStatement = connect.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE `" + COLUMN_ID + "` = ?");
             createStatement = connect.prepareStatement("INSERT INTO " + TABLE_NAME + "(`" + COLUMN_FILENAME + "`, `" + COLUMN_OWNER + "`, `" + COLUMN_CHECKSUM + "`, `" + COLUMN_SIZE + "`)"
             		+ " VALUES(?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		} catch (Exception e) {
@@ -52,5 +54,10 @@ public class FileConnector {
 		r.next();
 		
 		return r.getInt(1);
+	}
+	
+	public ResultSet select(int id) throws SQLException {
+		selectStatement.setInt(1, id);
+		return selectStatement.executeQuery();
 	}
 }

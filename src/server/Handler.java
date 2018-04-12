@@ -6,10 +6,18 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
 
@@ -174,7 +182,7 @@ public class Handler {
 		return false;
 	}
 	
-	public static void handleChunk(DataInputStream fromClient, DataOutputStream toClient, BaseProtocol protocol) throws IOException {
+	public static Chunk handleChunk(DataInputStream fromClient, DataOutputStream toClient, BaseProtocol protocol) throws IOException {
 		int fileId = fromClient.readInt();
 		int chunkId = fromClient.readInt();
 		int len = fromClient.readInt();
@@ -190,6 +198,12 @@ public class Handler {
 		bos.write(decryptedBytes);
 		bos.flush();
 		bos.close();
+		
+		Chunk c = new Chunk();
+		c.chunkId = chunkId;
+		c.fileId = fileId;
+		
+		return c;
 	}
 	
 	public static void handlePing(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
@@ -197,5 +211,67 @@ public class Handler {
 		toClient.writeInt(1);
 		toClient.flush();
 		System.out.println("Sent PONG");
+	}
+	
+	public static void handleSendChunk(DataInputStream fromClient, DataOutputStream toClient) throws IOException, SQLException, NoSuchAlgorithmException {
+		System.out.println("Received chunk from fellow server");
+		int fileId = fromClient.readInt();
+		int chunkId = fromClient.readInt();
+		int len = fromClient.readInt();
+		byte[] chunk = new byte[len];
+		
+		int offset = 0;
+		while(offset < len) {
+			offset += fromClient.read(chunk, offset, len - offset);
+		}
+		
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(Server.UPLOAD_DIR + fileId + "." + chunkId)));
+		bos.write(chunk);
+		bos.flush();
+		bos.close();
+		
+		File dir = new File(Server.UPLOAD_DIR);
+		File[] files = dir.listFiles(new FilenameFilter() {
+		    @Override
+		    public boolean accept(File dir, String name) {
+		        return name.startsWith(fileId + ".");
+		    }
+		});
+
+		long totalLength = 0;
+		for(File f : files) {
+		    totalLength += f.length();
+		}
+		
+		ResultSet r = FileConnector.getInstance().select(fileId);
+		r.next();
+		
+		long actualLength = r.getLong(FileConnector.COLUMN_SIZE);
+		String actualChecksum = r.getString(FileConnector.COLUMN_CHECKSUM);
+		
+		if(totalLength == actualLength) {
+			System.out.println("Complete file received! Splicing...");
+			bos = new BufferedOutputStream(new FileOutputStream(new File(Server.UPLOAD_DIR + fileId)));
+			for(File f : files) {
+				bos.write(Files.readAllBytes(Paths.get(f.getPath())));
+			}
+			bos.flush();
+			bos.close();
+			System.out.println("File spliced. Checking checksum...");
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			try (InputStream is = new FileInputStream(new File(Server.UPLOAD_DIR + fileId)); DigestInputStream dis = new DigestInputStream(is, md)) 
+			{
+				dis.readAllBytes();
+			}
+			byte[] digest = md.digest();
+			String checksum = Base64.getEncoder().encodeToString(digest);
+			if(checksum.equals(actualChecksum)) {
+				System.out.println("Checksum passed! Deleting chunk files");
+				for(File f : files) {
+					f.delete();
+				}
+				System.out.println("All chunk files cleaned! File completely received!");
+			}
+		}
 	}
 }

@@ -43,7 +43,7 @@ public class SplitChunksClient {
 	private static final String SUN_JSSE = "SunJSSE";
 	private static final String SERVER_LIST = "http://www.secstore.stream/Servers.php";
 	
-	private static final long THRESHOLD = 100;
+	private static final long THRESHOLD = 200;
 	
 	private static X509Certificate serverCert;
 	public static long ping(String ipAddress) {
@@ -143,7 +143,7 @@ public class SplitChunksClient {
 			step = (int) (size / (clientSockets.size() - 1));
 		}
 		for(int i = 0; i < clientSockets.size(); i++) {
-			threads[i] = new ChunkThread(clientSockets.get(0), Arrays.copyOfRange(fileBytes, (int) i * step, (int) Math.min(size, (i + 1) * step)), fileId, i, aes);
+			threads[i] = new ChunkThread(clientSockets.get(i), Arrays.copyOfRange(fileBytes, (int) i * step, (int) Math.min(size, (i + 1) * step)), fileId, i, aes);
 			threads[i].start();
 		}
 		
@@ -175,7 +175,7 @@ public class SplitChunksClient {
 			
 			toServer = new DataOutputStream(clientSocket.getOutputStream());
 			fromServer = new DataInputStream(clientSocket.getInputStream());
-			System.out.println("Sending HELO...");
+			System.out.println("Sending HELO to " + clientSocket.getInetAddress() + "...");
 			toServer.writeInt(Packet.HELO.getValue());
 			toServer.writeInt(HELO.getBytes().length);
 			toServer.write(HELO.getBytes());
@@ -296,7 +296,7 @@ public class SplitChunksClient {
 				DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
 				
 				if(chunkId != 0) {
-					System.out.println("Sending HELO...");
+					System.out.println("Sending HELO to " + socket.getInetAddress() + "...");
 					toServer.writeInt(Packet.HELO.getValue());
 					toServer.writeInt(HELO.getBytes().length);
 					toServer.write(HELO.getBytes());

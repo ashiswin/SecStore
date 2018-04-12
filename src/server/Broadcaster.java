@@ -48,6 +48,14 @@ public class Broadcaster {
 				threads[i] = new BroadcasterThread(serverSocket, c, data);
 				threads[i].start();
 			}
+			
+			for(int i = 0; i < servers.length(); i++) {
+				try {
+					threads[i].join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	

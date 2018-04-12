@@ -119,7 +119,7 @@ public class SplitChunksClient {
 	}
 
 	public static void main(String[] args) {
-		String filename = "/home/ashiswin/hello.txt";
+		String filename = "/home/ashiswin/monalisa.txt";
 
 		long timeStarted = System.nanoTime();
 

@@ -11,8 +11,8 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("LoginPage.fxml"));
-			Scene scene = new Scene(root, 1280, 800);
+			Parent root = FXMLLoader.load(getClass().getResource("./LoginScene.fxml"));
+			Scene scene = new Scene(root, 800, 600);
 		    
 	        stage.setTitle("Login to SecStore");
 	        stage.setScene(scene);

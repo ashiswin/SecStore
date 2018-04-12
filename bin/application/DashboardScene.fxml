@@ -41,17 +41,17 @@
             <Line endX="120.0" layoutX="364.0" layoutY="102.0" startX="-120.0" stroke="#ca1010" strokeWidth="3.0" />
             <ImageView fx:id="directionButton" fitHeight="20.0" fitWidth="20.0" layoutX="680.0" layoutY="75.0">
                <image>
-                  <Image url="@../public/images/arrow-up.png" />
+                  <Image url="@../../public/images/arrow-up.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="242.0" layoutY="77.0">
                <image>
-                  <Image url="@../public/images/search.png" />
+                  <Image url="@../../public/images/search.png" />
                </image>
             </ImageView>
             <ImageView fx:id="viewButton" fitHeight="20.0" fitWidth="20.0" layoutX="713.0" layoutY="75.0">
                <image>
-                  <Image url="@../public/images/list.png" />
+                  <Image url="@../../public/images/list.png" />
                </image>
             </ImageView>
             <ChoiceBox fx:id="sortChoice" layoutX="566.0" layoutY="75.0" prefHeight="26.0" prefWidth="103.0" style="-fx-background-color: #2B2828;">
@@ -71,7 +71,7 @@
              <Button layoutX="757.0" layoutY="14.0" mnemonicParsing="false" style="-fx-background-color: #2B2828;" />
                <ImageView fx:id="exitButton" fitHeight="20.0" fitWidth="20.0" layoutX="766.0" layoutY="14.0">
                    <image>
-                       <Image url="@../public/images/times.png" />
+                       <Image url="@../../public/images/times.png" />
                    </image>
                </ImageView>
          </children>

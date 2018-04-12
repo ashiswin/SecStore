@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Label alignment="CENTER_RIGHT" layoutX="497.0" layoutY="75.0" text="sort by :" textFill="#ca1010">
+               <font>
+                  <Font name="Segoe UI" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="firstnameLabel" alignment="CENTER_RIGHT" layoutX="97.0" layoutY="14.0" text="Name!" textFill="#ca1010">
+               <font>
+                  <Font name="Segoe UI" size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="641.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="77.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="logout" textAlignment="CENTER" textFill="#ca1010">
+               <font>
+                  <Font name="Segoe UI" size="12.0" />
+               </font>
+            </Button>
+            <Line endX="800.0" layoutX="-1.0" layoutY="50.0" stroke="#2e2d2d" strokeWidth="3.0" />
+            <Button fx:id="loginButton1" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="68.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="177.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="Upload" textAlignment="CENTER" textFill="#ca1010">
+               <font>
+                  <Font name="Segoe UI" size="14.0" />
+               </font>
+            </Button>
+            <Line endX="120.0" layoutX="364.0" layoutY="102.0" startX="-120.0" stroke="#ca1010" strokeWidth="3.0" />
+            <ImageView fx:id="directionButton" fitHeight="20.0" fitWidth="20.0" layoutX="680.0" layoutY="75.0">
+               <image>
+                  <Image url="@../public/images/arrow-up.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="242.0" layoutY="77.0">
+               <image>
+                  <Image url="@../public/images/search.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="viewButton" fitHeight="20.0" fitWidth="20.0" layoutX="713.0" layoutY="75.0">
+               <image>
+                  <Image url="@../public/images/list.png" />
+               </image>
+            </ImageView>
+            <ChoiceBox fx:id="sortChoice" layoutX="566.0" layoutY="75.0" prefHeight="26.0" prefWidth="103.0" style="-fx-background-color: #2B2828;">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:id="nameChoice" fx:value="Name" />
+                        <String fx:id="dateChoice" fx:value="Date" />
+                        <String fx:id="filesizeChoice" fx:value="File size" />
+                    </FXCollections>
+                </items>
+            </ChoiceBox>
+            <Label alignment="CENTER_RIGHT" layoutX="12.0" layoutY="14.0" text="Welcome, " textFill="#ca1010">
+               <font>
+                  <Font name="Segoe UI" size="18.0" />
+               </font>
+            </Label>
+             <Button layoutX="757.0" layoutY="14.0" mnemonicParsing="false" style="-fx-background-color: #2B2828;" />
+               <ImageView fx:id="exitButton" fitHeight="20.0" fitWidth="20.0" layoutX="766.0" layoutY="14.0">
+                   <image>
+                       <Image url="@../public/images/times.png" />
+                   </image>
+               </ImageView> 
+         </children>
+      </AnchorPane>
+      <ScrollPane prefHeight="558.0" prefWidth="800.0" style="-fx-background: #2B2828; -fx-border-width: 0;" />
+   </children>
+</VBox>

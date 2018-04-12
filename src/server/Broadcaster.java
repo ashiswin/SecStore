@@ -18,10 +18,8 @@ import org.json.JSONObject;
 import common.Packet;
 
 public class Broadcaster {
-	private static final String SERVER_LIST = "http://www.secstore.stream/Servers.php";
-	
 	public static void broadcastChunk(Chunk c) throws IOException, JSONException {
-		URL obj = new URL(SERVER_LIST);
+		URL obj = new URL(Server.SERVER_LIST);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
 		int responseCode = con.getResponseCode();

@@ -20,6 +20,7 @@ public class Server {
 	public static final String UPLOAD_DIR = "upload/";
 	public static boolean LOCAL_SERVER = true;
 	public static String NAME = "SecStore Server";
+	private static String SERVER_LIST = "http://www.secstore.stream/Servers.php";
 	public static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
 	
 	// RSA constants
@@ -55,6 +56,9 @@ public class Server {
 				for(int i = 1; i < arr.length; i++) {
 					NAME += arr[i] + " ";
 				}
+			}
+			else if(arr[0].equals("serverlist")) {
+				SERVER_LIST = arr[1];
 			}
 		}
 		

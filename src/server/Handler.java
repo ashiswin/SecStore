@@ -19,6 +19,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Base64;
 
 import javax.crypto.SecretKey;
@@ -237,7 +238,7 @@ public class Handler {
 		        return name.startsWith(fileId + ".");
 		    }
 		});
-
+		Arrays.sort(files);
 		long totalLength = 0;
 		for(File f : files) {
 		    totalLength += f.length();

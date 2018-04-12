@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.sql.SQLException;
+import java.util.Base64;
 
 import javax.crypto.SecretKey;
 
@@ -18,6 +20,8 @@ import common.Protocol;
 import common.protocols.BaseProtocol;
 import common.protocols.CP1;
 import common.protocols.CP2;
+import common.protocols.SplitChunks;
+import server.model.FileConnector;
 
 public class Handler {
 	/*
@@ -87,7 +91,17 @@ public class Handler {
 				protocol = new CP2(aesDecrypted);
 				System.out.println("Established protocol CP2");
 				break;
-
+			case SPLIT_CHUNKS:
+				//Read Encrypted AES key
+				numBytes = fromClient.readInt();
+				encryptedAES = new byte[numBytes];
+				fromClient.read(encryptedAES);
+				//Decrypt AES key
+				aesDecrypted = AES.decryptAESKey(encryptedAES,Server.privateKey);
+				//Put into protocol
+				protocol = new SplitChunks(aesDecrypted);
+				System.out.println("Established protocol SplitChunks");
+				break;
 			default:
 				System.err.println("Unknown protocol requested");
 				protocol = null;
@@ -98,7 +112,7 @@ public class Handler {
 	/*
 	 * handleFilename(): Handle the initiation of a new file transfer
 	 */
-	public static BufferedOutputStream handleFilename(DataInputStream fromClient, DataOutputStream toClient) throws IOException {
+	public static BufferedOutputStream handleFilename(DataInputStream fromClient, DataOutputStream toClient, BaseProtocol protocol) throws IOException, SQLException {
 		System.out.println("Receiving file...");
 		
 		int numBytes = fromClient.readInt();
@@ -106,10 +120,26 @@ public class Handler {
 		fromClient.read(filename);
 		String filenameString = new String(filename, 0, numBytes);
 		
-		System.out.println("Saving file to " + Server.UPLOAD_DIR + filenameString);
-		FileOutputStream fileOutputStream = new FileOutputStream(Server.UPLOAD_DIR + filenameString);
-		
-		return new BufferedOutputStream(fileOutputStream);
+		if(protocol.getProtocol() == Protocol.SPLIT_CHUNKS) {
+			int owner = fromClient.readInt();
+			long size = fromClient.readLong();
+			int digestLength = fromClient.readInt();
+			byte[] digest = new byte[digestLength];
+			fromClient.read(digest);
+			String md5 = Base64.getEncoder().encodeToString(digest);
+			System.out.println("Creating file entry of size " + size + " with checksum " + md5);
+			
+			FileConnector f = FileConnector.getInstance();
+			int fileId = f.create(filenameString, owner, md5, size);
+			toClient.writeInt(fileId);
+			
+			return null;
+		}
+		else {
+			System.out.println("Saving file to " + Server.UPLOAD_DIR + filenameString);
+			FileOutputStream fileOutputStream = new FileOutputStream(Server.UPLOAD_DIR + filenameString);
+			return new BufferedOutputStream(fileOutputStream);
+		}
 	}
 	
 	/*
@@ -142,6 +172,24 @@ public class Handler {
 		}
 		
 		return false;
+	}
+	
+	public static void handleChunk(DataInputStream fromClient, DataOutputStream toClient, BaseProtocol protocol) throws IOException {
+		int fileId = fromClient.readInt();
+		int chunkId = fromClient.readInt();
+		int len = fromClient.readInt();
+		byte[] ciphertext = new byte[len];
+		
+		int offset = 0;
+		while(offset < len) {
+			offset += fromClient.read(ciphertext, offset, len - offset);
+		}
+		
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(Server.UPLOAD_DIR + fileId + "." + chunkId)));
+		byte[] decryptedBytes = protocol.decrypt(ciphertext);
+		bos.write(decryptedBytes);
+		bos.flush();
+		bos.close();
 	}
 	
 	public static void handlePing(DataInputStream fromClient, DataOutputStream toClient) throws IOException {

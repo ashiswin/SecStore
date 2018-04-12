@@ -12,6 +12,7 @@ public enum Packet {
 	EOS(8), // End of session, de-authenticate session token
 	PROTOCOL(9), // Set protocol for files
 	PING(10), // Accept a ping request from client
+	CHUNK(11), // Receive a file chunk in SPLIT_CHUNKS
 	
 	// Packets from server to client
 	

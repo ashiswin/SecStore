@@ -281,36 +281,14 @@ public class ClientWithSecurity {
 			BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 			CP2 protocol = new CP2(aes);
 			
-			/*byte[] fromFileBuffer = new byte[2048];
-			int numBytes = 0;
-
-			// Send the file
-			int count = 0;
-			for (boolean fileEnded = false; !fileEnded;) {
-				numBytes = bufferedFileInputStream.read(fromFileBuffer);
-				fileEnded = numBytes < fromFileBuffer.length;
-				if(numBytes < 0) break;
-				
-				byte[] encryptedBytes = protocol.encrypt(fromFileBuffer);
-				System.out.println(count + ": " + Base64.getEncoder().encodeToString(encryptedBytes) + "\n");
-				toServer.writeInt(Packet.FILE.getValue());
-				toServer.writeInt(numBytes);
-				toServer.writeInt(encryptedBytes.length);
-				toServer.write(encryptedBytes, 0, encryptedBytes.length);
-
-				toServer.flush();
-				count++;
-			}
-			System.out.println("Sent " + count + " blocks");*/
 			toServer.writeInt(Packet.FILE.getValue());
-			//CipherOutputStream stream = new CipherOutputStream(toServer, protocol.getEncryptCipher());
 			byte[] fileBytes = Files.readAllBytes(Paths.get(filename));
 			byte[] encrypted = protocol.encrypt(fileBytes);
 			
 			toServer.writeInt(encrypted.length);
 			toServer.write(encrypted, 0, encrypted.length);
 			toServer.flush();
-			//stream.close();
+			
 			bufferedFileInputStream.close();
 			fileInputStream.close();
 		} catch(Exception e) {

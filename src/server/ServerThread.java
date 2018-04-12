@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
+import java.sql.SQLException;
 
 import common.Packet;
 import common.protocols.BaseProtocol;
@@ -70,7 +71,7 @@ public class ServerThread extends Thread {
 							sendEstablishError();
 							break;
 						}
-						bufferedFileOutputStream = Handler.handleFilename(fromClient, toClient);
+						bufferedFileOutputStream = Handler.handleFilename(fromClient, toClient, protocol);
 						startTime = System.currentTimeMillis();
 						break;
 					case FILE:
@@ -81,6 +82,13 @@ public class ServerThread extends Thread {
 						if(Handler.handleFile(fromClient, toClient, bufferedFileOutputStream, protocol)) {
 							count++;
 						}
+						break;
+					case CHUNK:
+						if(!established) {
+							sendEstablishError();
+							break;
+						}
+						Handler.handleChunk(fromClient, toClient, protocol);
 						break;
 					case EOF:
 						long endTime = System.currentTimeMillis() - startTime;
@@ -111,6 +119,8 @@ public class ServerThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}

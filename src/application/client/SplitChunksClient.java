@@ -9,7 +9,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -36,7 +38,7 @@ import common.Protocol;
 import common.protocols.SplitChunks;
 
 public class SplitChunksClient {
-	private static final String CA_CERT_PATH = "./CA.crt";
+	private static final String CA_CERT_PATH = "CA.crt";
 	private static final String HELO = "HELO";
 	private static final String WELCOME_MESSAGE = "Hello, this is SecStore!";
 	private static final String SHA1_WITH_RSA = "SHA1withRSA";
@@ -44,6 +46,8 @@ public class SplitChunksClient {
 	private static final String SERVER_LIST = "http://www.secstore.stream/Servers.php";
 	
 	private static final long THRESHOLD = 200;
+	private static Integer progress = 0;
+	private static int servers = 0;
 	
 	private static X509Certificate serverCert;
 	public static long ping(String ipAddress) {
@@ -129,11 +133,49 @@ public class SplitChunksClient {
 		System.out.println("Program took: " + timeTaken/1000000.0 + "ms to run");
 	}
 	
+	public static JSONObject authRequest(String username,String password){
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://www.secstore.stream/Authenticate.php").openConnection();
+            
+            String urlParameters = "username=" + username + "&password=" + password;
+            
+            con.setDoOutput(true);
+            con.setDoInput(true);
+            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            con.setRequestProperty("Content-Length", urlParameters.getBytes().length + "");
+            con.setRequestMethod("POST");
+
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            wr.write(urlParameters.getBytes());
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            JSONObject isAuth = new JSONObject(response.toString());
+            return isAuth;
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 	
-	public static void sendWithSplitChunks(File file, ArrayList<Socket> clientSockets, int fileId, SecretKey aes) throws IOException {
+	public static void sendWithSplitChunks(File file, ArrayList<Socket> clientSockets, int fileId, SecretKey aes, JSONObject auth) throws IOException {
 		long size = file.length();
 		byte[] fileBytes = Files.readAllBytes(Paths.get(file.getPath()));
 		ChunkThread[] threads = new ChunkThread[clientSockets.size()];
+		
+		servers = clientSockets.size();
 		
 		int step;
 		if(size % clientSockets.size() == 0) {
@@ -143,7 +185,7 @@ public class SplitChunksClient {
 			step = (int) (size / (clientSockets.size() - 1));
 		}
 		for(int i = 0; i < clientSockets.size(); i++) {
-			threads[i] = new ChunkThread(clientSockets.get(i), Arrays.copyOfRange(fileBytes, (int) i * step, (int) Math.min(size, (i + 1) * step)), fileId, i, aes);
+			threads[i] = new ChunkThread(clientSockets.get(i), Arrays.copyOfRange(fileBytes, (int) i * step, (int) Math.min(size, (i + 1) * step)), fileId, i, aes, auth);
 			threads[i].start();
 		}
 		
@@ -156,7 +198,10 @@ public class SplitChunksClient {
 		}
 	}
 
-
+	public static void updateProgress() {
+		System.out.println("Progress: " + (progress * 100.0 / servers) + "%");
+	}
+	
 	public static void runSplitChunks(String filename){
 		try {
 			ArrayList<Socket> clientSockets = null;
@@ -219,6 +264,13 @@ public class SplitChunksClient {
 
 			System.out.println("Verified welcome message!");
 
+			System.out.println("Authenticating");
+			JSONObject auth = authRequest("ashiswin", "terror56");
+			toServer.writeInt(Packet.AUTH.getValue());
+			toServer.writeInt(auth.getInt("id"));
+			toServer.writeInt(auth.getString("key").getBytes().length);
+			toServer.write(auth.getString("key").getBytes());
+			System.out.println("Authenticated");
 			//Generate AES key
 			SecretKey aes = AES.generateKey();
 			//Encrypt AES key
@@ -253,12 +305,13 @@ public class SplitChunksClient {
 			toServer.write(filename.substring(filename.lastIndexOf("/") + 1).getBytes());
 			toServer.flush();
 			
-			toServer.writeInt(0);// SEND OWNER
 			toServer.writeLong(file.length());
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			try (InputStream is = new FileInputStream(file); DigestInputStream dis = new DigestInputStream(is, md)) 
 			{
-				while(dis.read() != -1) {}
+				while(dis.read() != -1){
+
+				}
 			}
 			byte[] digest = md.digest();
 			toServer.writeInt(digest.length);
@@ -267,7 +320,7 @@ public class SplitChunksClient {
 			
 			int fileId = fromServer.readInt();
 			System.out.println("Allocated file id " + fileId);
-			sendWithSplitChunks(file, clientSockets, fileId, aes);
+			sendWithSplitChunks(file, clientSockets, fileId, aes, auth);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -279,13 +332,15 @@ public class SplitChunksClient {
 		int fileId;
 		int chunkId;
 		SecretKey aes;
+		JSONObject auth;
 		
-		public ChunkThread(Socket socket, byte[] data, int fileId, int chunkId, SecretKey aes) {
+		public ChunkThread(Socket socket, byte[] data, int fileId, int chunkId, SecretKey aes, JSONObject auth) {
 			this.socket = socket;
 			this.data = data;
 			this.fileId = fileId;
 			this.chunkId = chunkId;
 			this.aes = aes;
+			this.auth = auth;
 			
 			System.out.println("Created new chunk thread handling " + data.length + " bytes");
 		}
@@ -339,7 +394,12 @@ public class SplitChunksClient {
 					}
 
 					System.out.println("Verified welcome message!");
-
+					System.out.println("Authenticating");
+					toServer.writeInt(Packet.AUTH.getValue());
+					toServer.writeInt(auth.getInt("id"));
+					toServer.writeInt(auth.getString("key").getBytes().length);
+					toServer.write(auth.getString("key").getBytes());
+					System.out.println("Authenticated");
 					//Encrypt AES key
 					byte[] aesEncrypted = AES.encryptAESKey(aes,serverCert.getPublicKey());
 
@@ -364,6 +424,11 @@ public class SplitChunksClient {
 				toServer.write(encrypted, 0, encrypted.length);
 				toServer.flush();
 				
+				int received = fromServer.readInt();
+				synchronized(progress) {
+					progress += 1;
+					updateProgress();
+				}
 				toServer.writeInt(Packet.EOS.getValue());
 				System.out.println("Closing connection");
 			} catch(Exception e) {

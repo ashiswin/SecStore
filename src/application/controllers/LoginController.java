@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import singleton.Global;
@@ -57,6 +58,15 @@ public class LoginController {
                 return result;
             }
         };
+
+        Task getFilesTask = new Task(){
+
+            @Override
+            protected Object call() throws Exception {
+                return HttpRequest.getFilesRequest(Global.getInstance().getId());
+            }
+        };
+
         loginTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
@@ -68,9 +78,7 @@ public class LoginController {
                         global.setId(Integer.parseInt((String)result.get("id")));
                         global.setKey((String)result.get("key"));
                         global.setFirstname((String)result.get("firstname"));
-                        Stage stage = (Stage) loginButton.getScene().getWindow();
-                        stage.setScene(dashboardScene);
-                        resetScene();
+                        new Thread(getFilesTask).start();
                     } else {
                         errorLabel.setVisible(true);
                         loginProgress.setVisible(false);
@@ -79,6 +87,25 @@ public class LoginController {
                     e.printStackTrace();
                 }
 
+            }
+        });
+
+        getFilesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                JSONArray fileList = (JSONArray) getFilesTask.getValue();
+                try {
+                    if (fileList != null) {
+                        Global global = Global.getInstance();
+                        global.setFileList(fileList);
+                        Global.getInstance().setCurrentScene(dashboardScene);
+                        Stage stage = (Stage) loginButton.getScene().getWindow();
+                        stage.setScene(dashboardScene);
+                        resetScene();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
         loginProgress.progressProperty().bind(loginTask.progressProperty());

@@ -1,5 +1,8 @@
 package singleton;
 
+import javafx.scene.Scene;
+import org.json.JSONArray;
+
 /**
  * Created by Oon Tong on 4/13/2018.
  */
@@ -7,6 +10,28 @@ public class Global {
     private int id;
     private String key;
     private String firstname;
+
+    public Scene getCurrentScene() {
+        return currentScene;
+    }
+
+    public Global setCurrentScene(Scene currentScene) {
+        this.currentScene = currentScene;
+        return this;
+    }
+
+    Scene currentScene;
+
+    public JSONArray getFileList() {
+        return fileList;
+    }
+
+    public Global setFileList(JSONArray fileList) {
+        this.fileList = fileList;
+        return this;
+    }
+
+    JSONArray fileList;
 
     public String getFirstname() {
         return firstname;
@@ -40,6 +65,8 @@ public class Global {
     public Global reset(){
         this.key = null;
         this.id = -1;
+        this.firstname = null;
+        this.fileList = null;
         return this;
     }
 

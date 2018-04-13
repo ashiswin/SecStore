@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -23,24 +24,24 @@
                   <Font name="Segoe UI" size="18.0" />
                </font>
             </Label>
-            <Label fx:id="firstnameLabel" alignment="CENTER_RIGHT" layoutX="97.0" layoutY="14.0" text="Name!" textFill="#ca1010">
-               <font>
-                  <Font name="Segoe UI" size="18.0" />
-               </font>
-            </Label>
             <Button fx:id="logoutButton" alignment="CENTER" contentDisplay="CENTER" layoutX="641.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#handleLogout" prefHeight="30.0" prefWidth="77.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="logout" textAlignment="CENTER" textFill="#ca1010">
                <font>
                   <Font name="Segoe UI" size="12.0" />
                </font>
             </Button>
-            <Line endX="800.0" layoutX="-1.0" layoutY="50.0" stroke="#2e2d2d" strokeWidth="3.0" />
+            <Line endX="790.0" layoutX="2.0" layoutY="50.0" stroke="#2e2d2d" strokeWidth="3.0" />
             <Button fx:id="uploadButton" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="68.0" mnemonicParsing="false" onAction="#handleUpload" prefHeight="23.0" prefWidth="177.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="Upload" textAlignment="CENTER" textFill="#ca1010">
                <font>
                   <Font name="Segoe UI" size="14.0" />
                </font>
             </Button>
-            <Line endX="120.0" layoutX="364.0" layoutY="102.0" startX="-120.0" stroke="#ca1010" strokeWidth="3.0" />
-            <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="242.0" layoutY="77.0">
+            <TextField fx:id="searchTextInput" layoutX="244.0" layoutY="67.0" onAction="#handleSearch" prefHeight="35.0" prefWidth="194.0" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;">
+               <font>
+                  <Font name="Segoe UI" size="18.0" />
+               </font>
+            </TextField>
+            <Line endX="120.0" layoutX="314.0" layoutY="102.0" startX="-100.0" stroke="#ca1010" strokeWidth="3.0" />
+            <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="215.0" layoutY="77.0">
                <image>
                   <Image url="@../assets/images/search.png" />
                </image>
@@ -54,11 +55,6 @@
                     </FXCollections>
                 </items>
             </ChoiceBox>
-            <Label alignment="CENTER_RIGHT" layoutX="12.0" layoutY="14.0" text="Welcome, " textFill="#ca1010">
-               <font>
-                  <Font name="Segoe UI" size="18.0" />
-               </font>
-            </Label>
              <Button layoutX="757.0" layoutY="14.0" mnemonicParsing="false" style="-fx-background-color: #2B2828;" />
              <ImageView fx:id="exitButton" fitHeight="20.0" fitWidth="20.0" layoutX="763.0" layoutY="11.0" onMouseClicked="#handleExit">
                  <image>
@@ -83,8 +79,22 @@
                   </ImageView>
                </graphic>
             </ToggleButton>
+            <ImageView fitHeight="28.0" fitWidth="223.0" layoutX="14.0" layoutY="10.0">
+               <image>
+                  <Image url="@../assets/images/logo.png" />
+               </image>
+            </ImageView>
+            <Button fx:id="refreshButton" onAction="#handleRefresh" layoutX="451.0" layoutY="75.0" mnemonicParsing="false" style="-fx-background-color: #2B2828;">
+               <graphic>
+                  <ImageView fx:id="refreshImage" onMouseClicked="#handleRefresh" fitHeight="18.0" fitWidth="18.0">
+                     <image>
+                        <Image url="@../assets/images/sync.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
          </children>
       </AnchorPane>
-      <ScrollPane prefHeight="558.0" prefWidth="800.0" style="-fx-background: #2B2828; -fx-border-width: 0;" />
+      <ScrollPane fx:id="filePane" hbarPolicy="NEVER" prefHeight="558.0" prefWidth="800.0" style="-fx-background: #2B2828; -fx-border-width: 2; -fx-border-color: #ca1010;" />
    </children>
 </VBox>

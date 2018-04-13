@@ -26,13 +26,13 @@
          </image>
       </ImageView>
       <ProgressIndicator fx:id="loginProgress" layoutX="375.0" layoutY="190.0" style="-fx-progress-color: #ca1010;" visible="false" />
-      <TextField fx:id="usernameTextInput" alignment="CENTER" layoutX="280.0" layoutY="261.0" prefHeight="34.0" prefWidth="242.0" promptText="username" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;">
+      <TextField fx:id="usernameTextInput" alignment="CENTER" layoutX="280.0" layoutY="261.0" onAction="#handleLogin" prefHeight="34.0" prefWidth="242.0" promptText="username" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;">
          <font>
             <Font name="Segoe UI" size="18.0" />
          </font>
       </TextField>
       <Line endX="120.0" layoutX="401.0" layoutY="297.0" startX="-120.0" stroke="#ca1010" strokeWidth="3.0" />
-      <PasswordField fx:id="passwordTextInput" alignment="CENTER" layoutX="280.0" layoutY="317.0" prefHeight="34.0" prefWidth="242.0" promptText="password" style="-fx-background-color: #2B2828; -fx-text-fill: #ca1010; -fx-prompt-text-fill: #ca1010;">
+      <PasswordField fx:id="passwordTextInput" alignment="CENTER" layoutX="280.0" layoutY="317.0" onAction="#handleLogin" prefHeight="34.0" prefWidth="242.0" promptText="password" style="-fx-background-color: #2B2828; -fx-text-fill: #ca1010; -fx-prompt-text-fill: #ca1010;">
          <font>
             <Font name="Segoe UI" size="18.0" />
          </font>

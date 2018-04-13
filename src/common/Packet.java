@@ -15,6 +15,7 @@ public enum Packet {
 	CHUNK(11), // Receive a file chunk in SPLIT_CHUNKS
 	
 	// Packets from server to client
+	CHUNK_RECV(100),
 	
 	// Packets from server to server
 	SEND_CHUNK(200), // Chunk sent from another server

@@ -71,7 +71,6 @@ public class Broadcaster {
 		public void run() {
 			try {
 				System.out.println("Broadcasting to " + server.getInetAddress());
-				DataInputStream fromServer = new DataInputStream(server.getInputStream());
 				DataOutputStream toServer = new DataOutputStream(server.getOutputStream());
 				
 				toServer.writeInt(Packet.SEND_CHUNK.getValue());

@@ -17,6 +17,8 @@ import common.Protocol;
 
 public class SplitChunks extends BaseProtocol {
     Key key; //AES key
+    public int owner;
+    
     public SplitChunks(Key key) {
         super(Protocol.SPLIT_CHUNKS);
         this.key = key;

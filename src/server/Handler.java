@@ -25,12 +25,14 @@ import java.util.Base64;
 import javax.crypto.SecretKey;
 
 import common.AES;
+import common.Packet;
 import common.Protocol;
 import common.protocols.BaseProtocol;
 import common.protocols.CP1;
 import common.protocols.CP2;
 import common.protocols.SplitChunks;
 import server.model.FileConnector;
+import server.model.UserConnector;
 
 public class Handler {
 	/*
@@ -76,6 +78,31 @@ public class Handler {
 		System.out.println("Sent server certificate");
 	}
 	
+	public static int[] handleAuth(DataInputStream fromClient, DataOutputStream toClient) throws IOException, SQLException {
+		System.out.println("Received authentication request");
+		int owner = fromClient.readInt();
+		int numBytes = fromClient.readInt();
+		byte[] sessionKey = new byte[numBytes];
+		fromClient.read(sessionKey, 0, numBytes);
+		String key = new String(sessionKey);
+		
+		UserConnector u = UserConnector.getInstance();
+		ResultSet user = u.select(owner);
+		user.next();
+		
+		String actualSessionKey = user.getString(UserConnector.COLUMN_SESSIONKEY);
+		
+		int[] response = new int[2];
+		response[0] = (actualSessionKey.equals(key)) ? 1 : 0;
+		response[1] = owner;
+		if(response[0] == 1) {
+			System.out.println("Upgraded connection to authenticated for user " + owner + " with session key " + key);
+		}
+		else {
+			System.out.println("Authentication failed! " + actualSessionKey + " " + key);
+		}
+		return response;
+	}
 	/*
 	 * handleProtocl(): Handle the setting of the communication protocol
 	 */
@@ -130,13 +157,14 @@ public class Handler {
 		String filenameString = new String(filename, 0, numBytes);
 		
 		if(protocol.getProtocol() == Protocol.SPLIT_CHUNKS) {
-			int owner = fromClient.readInt();
+			SplitChunks p = (SplitChunks) protocol;
+			int owner = p.owner;
 			long size = fromClient.readLong();
 			int digestLength = fromClient.readInt();
 			byte[] digest = new byte[digestLength];
 			fromClient.read(digest);
 			String md5 = Base64.getEncoder().encodeToString(digest);
-			System.out.println("Creating file entry of size " + size + " with checksum " + md5);
+			System.out.println("Creating file entry for " + owner + " of size " + size + " with checksum " + md5);
 			
 			FileConnector f = FileConnector.getInstance();
 			int fileId = f.create(filenameString, owner, md5, size);
@@ -204,6 +232,7 @@ public class Handler {
 		c.chunkId = chunkId;
 		c.fileId = fileId;
 		
+		toClient.writeInt(Packet.CHUNK_RECV.getValue());
 		return c;
 	}
 	

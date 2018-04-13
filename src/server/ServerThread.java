@@ -17,6 +17,7 @@ import org.json.JSONException;
 import common.Packet;
 import common.Protocol;
 import common.protocols.BaseProtocol;
+import common.protocols.SplitChunks;
 
 public class ServerThread extends Thread {
 	// Client connection variables
@@ -27,8 +28,10 @@ public class ServerThread extends Thread {
 	// Data variables
 	byte[] signedWelcome;
 	boolean established = false;
+	boolean authenticated = false;
 	BaseProtocol protocol;
 	long startTime = -1;
+	int owner = 0;
 	
 	BufferedOutputStream bufferedFileOutputStream;
 	
@@ -68,14 +71,31 @@ public class ServerThread extends Thread {
 						}
 						Handler.handleCert(fromClient, toClient);
 						break;
+					case AUTH:
+						if(!established) {
+							sendEstablishError();
+							break;
+						}
+						int[] response = Handler.handleAuth(fromClient, toClient);
+						if(response[0] == 1) authenticated = true;
+						owner = response[1];
+						break;
 					case PROTOCOL:
 						protocol = Handler.handleProtocol(fromClient, toClient);
+						if(authenticated) {
+							SplitChunks p = (SplitChunks) protocol;
+							p.owner = owner;
+						}
+						else {
+							sendAuthenticateError();
+						}
 						break;
 					case FILENAME:
 						if(!established) {
 							sendEstablishError();
 							break;
 						}
+						
 						bufferedFileOutputStream = Handler.handleFilename(fromClient, toClient, protocol);
 						startTime = System.currentTimeMillis();
 						break;
@@ -148,6 +168,10 @@ public class ServerThread extends Thread {
 	}
 	
 	public void sendInvalidPacketError() {
+		// TODO: Implement error sending
+	}
+	
+	public void sendAuthenticateError() {
 		// TODO: Implement error sending
 	}
 }

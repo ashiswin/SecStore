@@ -12,13 +12,11 @@ public class ConfirmExitController {
 
     public void handleYes(ActionEvent event){
         isClose = true;
-        System.out.println("YES");
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
     public void handleNo(ActionEvent event){
         isClose = false;
-        System.out.println("NO");
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }

@@ -6,7 +6,6 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -14,7 +13,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.DashboardController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
@@ -28,21 +27,31 @@
                   <Font name="Segoe UI" size="18.0" />
                </font>
             </Label>
-            <Button fx:id="logoutButton" alignment="CENTER" contentDisplay="CENTER" layoutX="641.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#handleLogout" prefHeight="30.0" prefWidth="77.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="logout" textAlignment="CENTER" textFill="#ca1010">
+            <Button fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="641.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="77.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="logout" textAlignment="CENTER" textFill="#ca1010">
                <font>
                   <Font name="Segoe UI" size="12.0" />
                </font>
             </Button>
             <Line endX="800.0" layoutX="-1.0" layoutY="50.0" stroke="#2e2d2d" strokeWidth="3.0" />
-            <Button fx:id="uploadButton" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="68.0" mnemonicParsing="false" onAction="#handleUpload" prefHeight="23.0" prefWidth="177.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="Upload" textAlignment="CENTER" textFill="#ca1010">
+            <Button fx:id="loginButton1" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="68.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="177.0" style="-fx-background-color: #2B2828; -fx-border-color: #CA1010; -fx-border-width: 3;" text="Upload" textAlignment="CENTER" textFill="#ca1010">
                <font>
                   <Font name="Segoe UI" size="14.0" />
                </font>
             </Button>
             <Line endX="120.0" layoutX="364.0" layoutY="102.0" startX="-120.0" stroke="#ca1010" strokeWidth="3.0" />
+            <ImageView fx:id="directionButton" fitHeight="20.0" fitWidth="20.0" layoutX="680.0" layoutY="75.0">
+               <image>
+                  <Image url="@../assets/images/arrow-up.png" />
+               </image>
+            </ImageView>
             <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="242.0" layoutY="77.0">
                <image>
                   <Image url="@../assets/images/search.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="viewButton" fitHeight="20.0" fitWidth="20.0" layoutX="713.0" layoutY="75.0">
+               <image>
+                  <Image url="@../assets/images/list.png" />
                </image>
             </ImageView>
             <ChoiceBox fx:id="sortChoice" layoutX="566.0" layoutY="75.0" prefHeight="26.0" prefWidth="103.0" style="-fx-background-color: #2B2828;">
@@ -60,29 +69,11 @@
                </font>
             </Label>
              <Button layoutX="757.0" layoutY="14.0" mnemonicParsing="false" style="-fx-background-color: #2B2828;" />
-             <ImageView fx:id="exitButton" fitHeight="20.0" fitWidth="20.0" layoutX="763.0" layoutY="11.0" onMouseClicked="#handleExit">
-                 <image>
-                     <Image url="@../assets/images/times.png" />
-                 </image>
-             </ImageView>
-            <ToggleButton fx:id="directionToggle" layoutX="680.0" layoutY="71.0" mnemonicParsing="false" onAction="#handleDirectionToggle" style=" -fx-background-color: #2B2828;">
-               <graphic>
-                    <ImageView fx:id="directionImage" fitHeight="20.0" fitWidth="20.0">
-                     <image>
-                        <Image url="@../assets/images/arrow-down.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </ToggleButton>
-            <ToggleButton fx:id="viewToggle" layoutX="729.0" layoutY="71.0" mnemonicParsing="false" onAction="#handleViewToggle" style=" -fx-background-color: #2B2828;">
-               <graphic>
-                  <ImageView fx:id="viewImage" fitHeight="20.0" fitWidth="20.0">
-                     <image>
-                        <Image url="@../assets/images/list.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </ToggleButton>
+               <ImageView fx:id="exitButton" fitHeight="20.0" fitWidth="20.0" layoutX="766.0" layoutY="14.0">
+                   <image>
+                       <Image url="@../assets/images/times.png" />
+                   </image>
+               </ImageView>
          </children>
       </AnchorPane>
       <ScrollPane prefHeight="558.0" prefWidth="800.0" style="-fx-background: #2B2828; -fx-border-width: 0;" />

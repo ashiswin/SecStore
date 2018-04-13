@@ -1,6 +1,10 @@
 package controllers;
 
+import api.HttpRequest;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -8,6 +12,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -20,6 +26,7 @@ public class RegisterController {
     @FXML PasswordField passwordTextInput;
     @FXML PasswordField confirmpasswordTextInput;
     @FXML TextField errorTextInput;
+
     private Scene loginScene;
     ERROR_TYPE errorType = ERROR_TYPE.NO_ERROR;
 
@@ -28,17 +35,42 @@ public class RegisterController {
         return this;
     }
 
-    private void checkValid(){
-        boolean userValid = true;
-        if (!userValid) {
-            errorType = ERROR_TYPE.DUP_USER;
-        }else if (!passwordTextInput.getText().equals(confirmpasswordTextInput.getText())) {
+    private void checkValid(String firstname,String lastname,String username,String password){
+        if (!passwordTextInput.getText().equals(confirmpasswordTextInput.getText())) {
             errorType = ERROR_TYPE.DIFF_PASS;
+            return;
         } else if (passwordTextInput.getText().length() <= 6){
             errorType = ERROR_TYPE.INVALID_PASS;
-        } else {
-            errorType = ERROR_TYPE.NO_ERROR;
+            return;
         }
+
+        Task registerTask = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                System.out.println("attempting to register user");
+                JSONObject isRegistered = HttpRequest.registerRequest(firstname,lastname,username,password);
+                return isRegistered;
+            }
+        };
+        new Thread(registerTask).start();
+        registerTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                JSONObject isRegistered = (JSONObject)registerTask.getValue();
+                try {
+                    if ((boolean)isRegistered.get("success")){
+                        errorType = ERROR_TYPE.NO_ERROR;
+                        clearInput();
+                        Stage stage = (Stage) usernameTextInput.getScene().getWindow();
+                        stage.setScene(loginScene);
+                    } else {
+                        errorType = ERROR_TYPE.DUP_USER;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void handleBack(ActionEvent event){
@@ -48,7 +80,12 @@ public class RegisterController {
     }
 
     public void handleConfirm(ActionEvent event){
-        checkValid();
+        String firstname = firstnameTextInput.getText();
+        String lastname = lastnameTextInput.getText();
+        String username = usernameTextInput.getText();
+        String password = passwordTextInput.getText();
+        checkValid(firstname,lastname,username,password);
+
         switch (errorType){
             case DUP_USER:
                 errorTextInput.setDisable(false);
@@ -63,9 +100,6 @@ public class RegisterController {
                 errorTextInput.setText("Your password is too short!");
                 break;
             case NO_ERROR:
-                clearInput();
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(loginScene);
                 break;
         }
     }

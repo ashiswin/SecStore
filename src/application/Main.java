@@ -1,4 +1,5 @@
 import controllers.ConfirmExitController;
+import controllers.DashboardController;
 import controllers.LoginController;
 import controllers.RegisterController;
 import javafx.application.Application;
@@ -42,6 +43,7 @@ public class Main extends Application {
         });
 
         FXMLLoader dashboardPaneLoader = new FXMLLoader(getClass().getResource("./fxml/DashboardScene.fxml"));
+        System.out.println(getClass().getResource("./fxml/DashboardScene.fxml"));
         Parent dashboardPane = dashboardPaneLoader.load();
         Scene dashboardScene = new Scene(dashboardPane, 800, 600);
         dashboardPane.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -83,6 +85,9 @@ public class Main extends Application {
 
         RegisterController RegisterController = registerPaneLoader.getController();
         RegisterController.setLoginScene(loginScene);
+
+        DashboardController dashboardController = dashboardPaneLoader.getController();
+        dashboardController.setLoginScene(loginScene);
 
         window.setOnCloseRequest(e -> {
             e.consume();

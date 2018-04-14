@@ -4,28 +4,35 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
-<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.LoginController">
    <children>
+
+       <ImageView fx:id="exitButton" fitHeight="20.0" fitWidth="20.0" layoutX="766.0" layoutY="14.0" onMouseClicked="#handleExit">
+         <image>
+            <Image url="@../assets/images/times.png" />
+         </image>
+       </ImageView>
       <ImageView fitHeight="61.0" fitWidth="507.0" layoutX="147.0" layoutY="106.0">
          <image>
             <Image url="@../assets/images/logo.png" />
          </image>
       </ImageView>
-      <TextField fx:id="usernameTextInput" alignment="CENTER" layoutX="280.0" layoutY="261.0" prefHeight="34.0" prefWidth="242.0" promptText="username" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;">
+      <ProgressIndicator fx:id="loginProgress" layoutX="375.0" layoutY="190.0" style="-fx-progress-color: #ca1010;" visible="false" />
+      <TextField fx:id="usernameTextInput" alignment="CENTER" layoutX="280.0" layoutY="261.0" onAction="#handleLogin" prefHeight="34.0" prefWidth="242.0" promptText="username" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;">
          <font>
             <Font name="Segoe UI" size="18.0" />
          </font>
       </TextField>
       <Line endX="120.0" layoutX="401.0" layoutY="297.0" startX="-120.0" stroke="#ca1010" strokeWidth="3.0" />
-      <PasswordField fx:id="passwordTextInput" alignment="CENTER" layoutX="280.0" layoutY="317.0" prefHeight="34.0" prefWidth="242.0" promptText="password" style="-fx-background-color: #2B2828; -fx-text-fill: #ca1010; -fx-prompt-text-fill: #ca1010;">
+      <PasswordField fx:id="passwordTextInput" alignment="CENTER" layoutX="280.0" layoutY="317.0" onAction="#handleLogin" prefHeight="34.0" prefWidth="242.0" promptText="password" style="-fx-background-color: #2B2828; -fx-text-fill: #ca1010; -fx-prompt-text-fill: #ca1010;">
          <font>
             <Font name="Segoe UI" size="18.0" />
          </font>
@@ -41,17 +48,16 @@
             <Font name="Segoe UI" size="12.0" />
          </font>
       </Label>
-      <Hyperlink onMouseClicked="#handleRegister" fx:id="registerLink" layoutX="276.0" layoutY="387.0" onAction="#handleRegister" prefHeight="22.0" prefWidth="57.0" text="Register" textFill="#ca1010" underline="true">
+      <Hyperlink fx:id="registerLink" layoutX="276.0" layoutY="387.0" onAction="#handleRegister" onMouseClicked="#handleRegister" prefHeight="22.0" prefWidth="57.0" text="Register" textFill="#ca1010" underline="true">
          <font>
             <Font name="Segoe UI Bold" size="12.0" />
          </font>
       </Hyperlink>
-
-       <ImageView  onMouseClicked="#handleExit" fitHeight="20.0" fitWidth="20.0" layoutX="766.0" layoutY="14.0">
-         <image>
-            <Image url="@../assets/images/times.png" />
-         </image>
-       </ImageView>
+      <Label fx:id="errorLabel" alignment="CENTER" focusTraversable="false" layoutX="290.0" layoutY="205.0" prefHeight="22.0" prefWidth="219.0" style="-fx-border-color: #ca1010;" text="failed login attempt" textFill="#ca1010" textOverrun="CLIP" visible="false">
+         <font>
+            <Font name="OCR A Extended" size="14.0" />
+         </font>
+      </Label>
 
 
    </children>

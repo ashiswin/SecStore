@@ -1,6 +1,9 @@
-package controllers;
+package application.controllers;
 
-import api.HttpRequest;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import application.api.HttpRequest;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -12,8 +15,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 /**

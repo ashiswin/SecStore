@@ -1,13 +1,13 @@
-package components;
+package application.components;
 
+import java.io.File;
+
+import application.singleton.Global;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
-import singleton.Global;
-
-import java.io.File;
 
 /**
  * Created by Oon Tong on 4/13/2018.

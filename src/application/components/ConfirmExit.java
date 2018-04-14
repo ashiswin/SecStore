@@ -1,13 +1,14 @@
-package components;
-
-import controllers.ConfirmExitController;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.*;
+package application.components;
 
 import java.io.IOException;
+
+import application.controllers.ConfirmExitController;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Created by Oon Tong on 4/12/2018.

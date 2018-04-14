@@ -1,7 +1,10 @@
-package singleton;
+
+package application.singleton;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javafx.scene.Scene;
-import org.json.JSONArray;
 
 /**
  * Created by Oon Tong on 4/13/2018.
@@ -10,7 +13,8 @@ public class Global {
     private int id;
     private String key;
     private String firstname;
-
+    private JSONObject auth;
+    
     public Scene getCurrentScene() {
         return currentScene;
     }
@@ -60,6 +64,14 @@ public class Global {
     public Global setKey(String key) {
         this.key = key;
         return this;
+    }
+    
+    public JSONObject getAuth() {
+    	return auth;
+    }
+    
+    public void setAuth(JSONObject auth) {
+    	this.auth = auth;
     }
 
     public Global reset(){

@@ -1,5 +1,6 @@
 package server;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -234,6 +235,34 @@ public class Handler {
 		
 		toClient.writeInt(Packet.CHUNK_RECV.getValue());
 		return c;
+	}
+	
+	public static void handleDownload(DataInputStream fromClient, DataOutputStream toClient, BaseProtocol protocol) throws IOException {
+		int fileId = fromClient.readInt();
+		
+		// Open the file
+		File file = new File(Server.UPLOAD_DIR + fileId);
+		if(!file.exists()) {
+			System.err.println("File has problem");
+			System.exit(-1);
+		}
+		if(file.length() == 0) {
+			System.err.println("Empty file");
+			System.exit(-1);
+		}
+	    
+		FileInputStream fileInputStream = new FileInputStream(file);
+		BufferedInputStream bufferedFileInputStream = new BufferedInputStream(fileInputStream);
+		
+		byte[] fileBytes = Files.readAllBytes(Paths.get(Server.UPLOAD_DIR + fileId));
+		byte[] encrypted = protocol.encrypt(fileBytes);
+		
+		toClient.writeInt(encrypted.length);
+		toClient.write(encrypted, 0, encrypted.length);
+		toClient.flush();
+		
+		bufferedFileInputStream.close();
+		fileInputStream.close();
 	}
 	
 	public static void handlePing(DataInputStream fromClient, DataOutputStream toClient) throws IOException {

@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.LoginController">
    <children>
 
        <ImageView fx:id="exitButton" fitHeight="20.0" fitWidth="20.0" layoutX="766.0" layoutY="14.0" onMouseClicked="#handleExit">

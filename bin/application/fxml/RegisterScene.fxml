@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="controllers.RegisterController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="application.controllers.RegisterController">
    <children>
       <TextField fx:id="errorTextInput" alignment="CENTER" editable="false" layoutX="253.0" layoutY="529.0" prefHeight="35.0" prefWidth="294.0" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;" disable="true">
          <font>

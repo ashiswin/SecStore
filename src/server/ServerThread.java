@@ -116,6 +116,13 @@ public class ServerThread extends Thread {
 						c = Handler.handleChunk(fromClient, toClient, protocol);
 						count++;
 						break;
+					case DOWNLOAD:
+						if(!established) {
+							sendEstablishError();
+							break;
+						}
+						Handler.handleDownload(fromClient, toClient, protocol);
+						break;
 					case EOF:
 						long endTime = System.currentTimeMillis() - startTime;
 						startTime = -1;

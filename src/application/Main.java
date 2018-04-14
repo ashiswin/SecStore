@@ -1,10 +1,11 @@
-import components.ConfirmExit;
-import controllers.ConfirmExitController;
-import controllers.DashboardController;
-import controllers.LoginController;
-import controllers.RegisterController;
-import javafx.application.Application;
+package application;
 
+import application.controllers.ConfirmExitController;
+import application.controllers.DashboardController;
+import application.controllers.LoginController;
+import application.controllers.RegisterController;
+import application.singleton.Global;
+import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import singleton.Global;
 
 public class Main extends Application {
     Stage window;
@@ -89,6 +89,7 @@ public class Main extends Application {
 
         DashboardController dashboardController = dashboardPaneLoader.getController();
         dashboardController.setLoginScene(loginScene);
+        loginController.setDashboardController(dashboardController);
 
         Global.getInstance().setCurrentScene(loginScene);
 

@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="250.0" style="-fx-background-color: #2B2828; -fx-border-color: #ca1010; -fx-border-width: 3;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ConfirmExitController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="250.0" style="-fx-background-color: #2B2828; -fx-border-color: #ca1010; -fx-border-width: 3;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.ConfirmExitController">
    <children>
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="16.0" prefHeight="120.0" prefWidth="218.0" text="Are you sure you want to exit?" textAlignment="CENTER" textFill="#ca1010" textOverrun="WORD_ELLIPSIS" wrapText="true">
          <font>

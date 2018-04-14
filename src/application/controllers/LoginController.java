@@ -1,19 +1,24 @@
-package controllers;
+package application.controllers;
 
-import api.HttpRequest;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import application.api.HttpRequest;
+import application.singleton.Global;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import singleton.Global;
 
 
 public class LoginController {
@@ -26,7 +31,8 @@ public class LoginController {
 
     private Scene registerScene;
     private Scene dashboardScene;
-
+    private DashboardController dashboardController;
+    
     public LoginController setRegisterScene(Scene registerScene) {
         this.registerScene = registerScene;
         return this;
@@ -35,6 +41,10 @@ public class LoginController {
     public LoginController setDashboardScene(Scene dashboardScene) {
         this.dashboardScene = dashboardScene;
         return this;
+    }
+    
+    public void setDashboardController(DashboardController dashboardController) {
+    	this.dashboardController = dashboardController;
     }
 
     public void handleLogin(ActionEvent event) {
@@ -78,6 +88,7 @@ public class LoginController {
                         global.setId(Integer.parseInt((String)result.get("id")));
                         global.setKey((String)result.get("key"));
                         global.setFirstname((String)result.get("firstname"));
+                        global.setAuth(result);
                         new Thread(getFilesTask).start();
                     } else {
                         errorLabel.setVisible(true);
@@ -101,6 +112,7 @@ public class LoginController {
                         Global.getInstance().setCurrentScene(dashboardScene);
                         Stage stage = (Stage) loginButton.getScene().getWindow();
                         stage.setScene(dashboardScene);
+                        dashboardController.handleRefresh(null);
                         resetScene();
                     }
                 } catch (Exception e){

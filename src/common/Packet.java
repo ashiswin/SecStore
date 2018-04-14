@@ -13,6 +13,7 @@ public enum Packet {
 	PROTOCOL(9), // Set protocol for files
 	PING(10), // Accept a ping request from client
 	CHUNK(11), // Receive a file chunk in SPLIT_CHUNKS
+	DOWNLOAD(12), // Initiate download
 	
 	// Packets from server to client
 	CHUNK_RECV(100),

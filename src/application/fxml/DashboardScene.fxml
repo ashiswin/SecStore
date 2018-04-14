@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
@@ -15,7 +22,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.DashboardController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #2B2828;-fx-border-color: #ca1010; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.DashboardController">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
@@ -35,7 +42,7 @@
                   <Font name="Segoe UI" size="14.0" />
                </font>
             </Button>
-            <TextField fx:id="searchTextInput" layoutX="244.0" layoutY="67.0" onAction="#handleSearch" prefHeight="35.0" prefWidth="194.0" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;">
+            <TextField fx:id="searchTextInput" layoutX="244.0" layoutY="67.0" prefHeight="35.0" prefWidth="194.0" style="-fx-background-color: #2B2828; -fx-text-fill: #CA1010; -fx-prompt-text-fill: #CA1010;">
                <font>
                   <Font name="Segoe UI" size="18.0" />
                </font>
@@ -84,9 +91,9 @@
                   <Image url="@../assets/images/logo.png" />
                </image>
             </ImageView>
-            <Button fx:id="refreshButton" onAction="#handleRefresh" layoutX="451.0" layoutY="75.0" mnemonicParsing="false" style="-fx-background-color: #2B2828;">
+            <Button fx:id="refreshButton" layoutX="451.0" layoutY="75.0" mnemonicParsing="false" onAction="#handleRefresh" style="-fx-background-color: #2B2828;">
                <graphic>
-                  <ImageView fx:id="refreshImage" onMouseClicked="#handleRefresh" fitHeight="18.0" fitWidth="18.0">
+                  <ImageView fx:id="refreshImage" fitHeight="18.0" fitWidth="18.0" onMouseClicked="#handleRefresh">
                      <image>
                         <Image url="@../assets/images/sync.png" />
                      </image>
@@ -95,6 +102,6 @@
             </Button>
          </children>
       </AnchorPane>
-      <ScrollPane fx:id="filePane" hbarPolicy="NEVER" prefHeight="558.0" prefWidth="800.0" style="-fx-background: #2B2828; -fx-border-width: 2; -fx-border-color: #ca1010;" />
+      <ScrollPane fx:id="filePane" hbarPolicy="NEVER" prefHeight="558.0" prefWidth="800.0" style="-fx-background: #2B2828; -fx-border-width: 2; -fx-border-color: #ca1010;" vbarPolicy="ALWAYS" />
    </children>
 </VBox>

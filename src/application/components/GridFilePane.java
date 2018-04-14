@@ -1,13 +1,14 @@
-package components;
+package application.components;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.layout.Region;
+import javafx.scene.Node;
 import javafx.scene.layout.TilePane;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by Oon Tong on 4/13/2018.
@@ -17,13 +18,13 @@ public class GridFilePane extends TilePane {
         this.setOrientation(Orientation.HORIZONTAL);
         this.setTileAlignment(Pos.CENTER_LEFT);
         this.setPrefColumns(4);
-        this.setStyle("-fx-background-color: #cacaca");
+        //this.setStyle("-fx-background-color: #cacaca");
 
 
-        }
+    }
 
     public void initialize(JSONArray fileList) {
-        ObservableList children = this.getChildren();
+        ObservableList<Node> children = this.getChildren();
         for (int i = 0; i < fileList.length(); i++) {
             try {
                 JSONObject file = fileList.getJSONObject(i);

@@ -1,4 +1,4 @@
-package client;
+package application.client;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -121,19 +120,8 @@ public class SplitChunksClient {
 
 		return null;
 	}
-
-	public static void main(String[] args) {
-		String filename = "/home/ashiswin/randomdoc.pdf";
-
-		long timeStarted = System.nanoTime();
-
-		runSplitChunks(filename);
-
-		long timeTaken = System.nanoTime() - timeStarted;
-		System.out.println("Program took: " + timeTaken/1000000.0 + "ms to run");
-	}
 	
-	public static JSONObject authRequest(String username,String password){
+	public static JSONObject authRequest(String username, String password){
         try {
             HttpURLConnection con = (HttpURLConnection) new URL("http://www.secstore.stream/Authenticate.php").openConnection();
             
@@ -202,8 +190,9 @@ public class SplitChunksClient {
 		System.out.println("Progress: " + (progress * 100.0 / servers) + "%");
 	}
 	
-	public static void runSplitChunks(String filename){
+	public static void runSplitChunks(String filename, JSONObject auth){
 		try {
+			progress = 0;
 			ArrayList<Socket> clientSockets = null;
 			
 			DataOutputStream toServer = null;
@@ -265,7 +254,6 @@ public class SplitChunksClient {
 			System.out.println("Verified welcome message!");
 
 			System.out.println("Authenticating");
-			JSONObject auth = authRequest("ashiswin", "terror56");
 			toServer.writeInt(Packet.AUTH.getValue());
 			toServer.writeInt(auth.getInt("id"));
 			toServer.writeInt(auth.getString("key").getBytes().length);
@@ -424,7 +412,7 @@ public class SplitChunksClient {
 				toServer.write(encrypted, 0, encrypted.length);
 				toServer.flush();
 				
-				int received = fromServer.readInt();
+				fromServer.readInt();
 				synchronized(progress) {
 					progress += 1;
 					updateProgress();

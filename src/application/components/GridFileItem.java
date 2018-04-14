@@ -50,11 +50,13 @@ public class GridFileItem extends VBox {
 
     private void initialize(){
         ImageView thumbnail = new ImageView();
+        thumbnail.setStyle("-fx-border-width:1; -fx-border-color: #ca1010");
         thumbnail.setFitHeight(100);
         thumbnail.setFitWidth(100);
         Label filename = new Label();
         filename.setText(this.filename);
         filename.setAlignment(Pos.CENTER);
+        filename.setStyle("-fx-border-width:1; -fx-border-color: #ca1010");
         filename.setTextAlignment(TextAlignment.CENTER);
         filename.setTextFill(Color.web("#ca1010"));
         filename.setFont(Font.font("Segoe UI",16));

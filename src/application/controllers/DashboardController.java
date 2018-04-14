@@ -127,10 +127,10 @@ public class DashboardController {
                 JSONArray fileList = (JSONArray) getFilesTask.getValue();
                 try {
                     if (fileList != null) {
-                        //TODO
-                       //RESET THE GRID PANE;
                         System.out.println("Refresh");
-                        filePane.setContent(new GridFilePane(Global.getInstance().getFileList()));
+                        GridFilePane gridFilePane = new GridFilePane();
+                        gridFilePane.initialize(Global.getInstance().getFileList());
+                        filePane.setContent(gridFilePane);
                     }
                 } catch (Exception e){
                     e.printStackTrace();

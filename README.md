@@ -1,0 +1,39 @@
+# SecStore Design Project
+
+## Getting Started
+
+Simply clone this repository and you're good to go.
+
+### Prerequisites
+
+You will need the following installed on your system:
+
+```
+* Java SE 9
+* JavaFX
+```
+
+## Deployment
+
+To run the system, you first need to start the server. All runnable files are contained within the outputs folder. You can start the server using the following command:
+```
+cd outputs
+java -jar Server.jar
+```
+
+For the clients, the syntax is similar. CP1 implements RSA encryption while CP2 implements AES encryption. You can execute them with:
+```
+java -jar CP<1|2>.jar <file to upload>
+```
+
+Finally, for the JavaFX application, you will need to load the project into either Eclipse or IntelliJ with the Eclipse Project Integration plugin. From there you can run Main.java, which will launch the main user interface.
+
+## Authors
+
+* **Isaac Ashwin** - *1002151* - [ashiswin](https://github.com/ashiswin)
+* **Tan Oon Tong** - *1002155* - [oonyoontong](https://github.com/oonyoontong)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+

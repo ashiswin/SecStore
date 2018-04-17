@@ -119,7 +119,7 @@ public class ClientWithSecurity {
 	}
 
 	public static void main(String[] args) {
-		String filename = "/home/ashiswin/rr.txt";
+		String filename = args[0];
 
 		long timeStarted = System.nanoTime();
 

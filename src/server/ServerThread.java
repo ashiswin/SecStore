@@ -167,6 +167,8 @@ public class ServerThread extends Thread {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+		} catch (SignatureException e) {
+			e.printStackTrace();
 		}
 	}
 	

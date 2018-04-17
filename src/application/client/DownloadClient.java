@@ -17,6 +17,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Random;
 
 import javax.crypto.SecretKey;
 
@@ -172,10 +173,19 @@ public class DownloadClient {
 			}
 			toServer = new DataOutputStream(clientSocket.getOutputStream());
 			fromServer = new DataInputStream(clientSocket.getInputStream());
+			System.out.println("Generating nonce...");
+			Random random = new Random();
+			String nonce = "";
+			for(int i = 0; i < 10; i++) {
+				nonce += random.nextInt(10);
+			}
+			
 			System.out.println("Sending HELO...");
 			toServer.writeInt(Packet.HELO.getValue());
 			toServer.writeInt(HELO.getBytes().length);
 			toServer.write(HELO.getBytes());
+			toServer.writeInt(nonce.getBytes().length);
+			toServer.write(nonce.getBytes());
 			toServer.flush();
 
 			int welcomeLength = fromServer.readInt();
@@ -208,7 +218,7 @@ public class DownloadClient {
 
 			Signature dsa = Signature.getInstance(SHA1_WITH_RSA, SUN_JSSE);
 			dsa.initVerify(serverCert.getPublicKey());
-			dsa.update(WELCOME_MESSAGE.getBytes("UTF-8"));
+			dsa.update(nonce.getBytes("UTF-8"));
 			if(!dsa.verify(welcome)) {
 				System.err.println("Verification failed! Terminating file transfer");
 				System.exit(-1);

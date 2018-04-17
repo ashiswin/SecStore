@@ -21,6 +21,8 @@ import javafx.stage.FileChooser;
  * Created by Oon Tong on 4/13/2018.
  */
 public class GridFileItem extends VBox {
+	private static final int MAXLEN = 20;
+	
     public int id;
     public String filename;
     public int size;
@@ -73,9 +75,12 @@ public class GridFileItem extends VBox {
             thumbnail.setImage(new Image("./application/assets/images/document.png"));
         }
         Label filename = new Label();
-        filename.setText(this.filename.substring(0, Math.min(20, this.filename.length())));
+        String displayName = this.filename.substring(0, Math.min(MAXLEN, this.filename.length()));
+        if(this.filename.length() > MAXLEN) {
+        	displayName = displayName.substring(0, MAXLEN - 3) + "...";
+        }
+        filename.setText(displayName);
         filename.setAlignment(Pos.CENTER);
-        filename.setStyle("-fx-border-width:1; -fx-border-color: #ca1010");
         filename.setTextAlignment(TextAlignment.CENTER);
         filename.setTextFill(Color.web("#ca1010"));
         filename.setFont(Font.font("Segoe UI",16));

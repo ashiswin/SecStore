@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -36,23 +37,35 @@ import server.model.FileConnector;
 import server.model.UserConnector;
 
 public class Handler {
+	public static byte[] sign(byte[] message) throws SignatureException {
+		Server.dsa.update(message);
+		return Server.dsa.sign();
+	}
+	
 	/*
 	 * handleHelo(): Handle an initiation packet from the client and verify that it is valid
 	 */
-	public static boolean handleHelo(DataInputStream fromClient, DataOutputStream toClient, byte[] signedWelcome) throws IOException {
+	public static boolean handleHelo(DataInputStream fromClient, DataOutputStream toClient, byte[] signedWelcome) throws IOException, SignatureException {
 		System.out.println("Receiving hello");
 		int numBytes = fromClient.readInt();
 		byte[] helo = new byte[numBytes];
 		fromClient.read(helo);
+		int nonceBytes = fromClient.readInt();
+		byte[] nonce = new byte[nonceBytes];
+		fromClient.read(nonce);
 		
 		String heloString = new String(helo, 0, numBytes);
+		String nonceString = new String(nonce, 0, nonceBytes);
 		if(!heloString.equals("HELO")) {
 			System.err.println("Invalid HELO received: " + heloString);
 		}
 		else {
 			System.out.println("Sending welcome message...");
-			toClient.writeInt(signedWelcome.length);
-			toClient.write(signedWelcome);
+			byte[] signedNonce = sign(nonce);
+			toClient.writeInt(signedNonce.length);
+			toClient.write(signedNonce);
+			//toClient.writeInt(signedWelcome.length);
+			//toClient.write(signedWelcome);
 			toClient.flush();
 			System.out.println("Sent welcome message");
 			return true;

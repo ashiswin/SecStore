@@ -2,7 +2,14 @@
 
 ## Getting Started
 
-Simply clone this repository and you're good to go.
+Simply clone this repository and you're good to go. The noteworthy code files are as follows:
+
+```
+* src/client/CP1Client.java - Implementation of CP1
+* src/client/CP2Client.java - Implementation of CP2
+* src/common/Packet.java - List of all packets used in communication
+* src/common/Protocol.java - List of all supported communication protocols
+```
 
 ### Prerequisites
 

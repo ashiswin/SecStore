@@ -1,6 +1,6 @@
 # SecStore Design Project
 
-##How it Works
+## How it Works
 SecStore is a secure and fast cloud storage solution.
 
 The SecStore splits a file into N chunks and uploads one chunk to each of the N servers. The servers will then perform a server-to-server file syncing to ensure every server has the completed file. 

@@ -1,5 +1,15 @@
 # SecStore Design Project
 
+##How it Works
+SecStore is a secure and fast cloud storage solution.
+
+The SecStore splits a file into N chunks and uploads one chunk to each of the N servers. The servers will then perform a server-to-server file syncing to ensure every server has the completed file. 
+
+When downloading occurs, the client will perform a ping on every server and choose the best server to download from.
+
+In this way, we have many servers with backups of the files to ensure that users do not lose their data in the event of a server failure.
+
+
 ## Getting Started
 
 Simply clone this repository and you're good to go. The noteworthy code files are as follows:
